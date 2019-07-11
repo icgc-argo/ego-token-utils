@@ -1,11 +1,11 @@
 {
-  "name": "argo-access-rules",
+  "name": "@icgc-argo/ego-token-utils",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/argo-access-rules.umd.js",
-  "module": "dist/argo-access-rules.es5.js",
-  "typings": "dist/types/argo-access-rules.d.ts",
+  "main": "dist/ego-token-utils.umd.js",
+  "module": "dist/ego-token-utils.es5.js",
+  "typings": "dist/types/ego-token-utils.d.ts",
   "files": [
     "dist"
   ],
