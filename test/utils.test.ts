@@ -1,4 +1,6 @@
-import {
+import utils from '../src/ego-token-utils'
+
+const {
   isValidJwt,
   getAuthorizedProgramScopes,
   isDccMember,
@@ -10,7 +12,7 @@ import {
   parseScope,
   serializeScope,
   decodeToken
-} from '../src/utils'
+} = utils
 
 /** has the following scopes:
  * "PROGRAM-WP-CPMP-US.READ"
