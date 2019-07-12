@@ -48,20 +48,30 @@ type PermissionScopeObj = {
   permission: keyof typeof PERMISSIONS
 }
 
+/**
+ * checks if a string is a proper permission
+ * @param str
+ */
 export const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
   Object.values(PERMISSIONS).includes(str)
 
+/**
+ * wrapper for jwt-decode that provides static Ego typing
+ * @param egoJwt
+ */
 export const decodeToken = (egoJwt: string): EgoJwtData => jwtDecode(egoJwt)
 
+/**
+ * checks if a given jwt is valid and has not expired.
+ * currently does not validate against Ego signature
+ * @param egoJwt
+ */
 export const isValidJwt = (egoJwt?: string) => {
   try {
     if (!egoJwt) {
       return false
     } else {
       const { exp } = decodeToken(egoJwt)
-      if (!(exp * 1000 > Date.now())) {
-        console.log('expired!!!!')
-      }
       return exp * 1000 > Date.now()
     }
   } catch (err) {
@@ -69,6 +79,10 @@ export const isValidJwt = (egoJwt?: string) => {
   }
 }
 
+/**
+ * check if a given jwt has dcc access
+ * @param egoJwt
+ */
 export const isDccMember = (egoJwt: string) => {
   try {
     const data = decodeToken(egoJwt)
@@ -79,6 +93,10 @@ export const isDccMember = (egoJwt: string) => {
   }
 }
 
+/**
+ * check if a given jwt has rdpc access
+ * @param egoJwt
+ */
 export const isRdpcMember = (egoJwt: string) => {
   try {
     const data = decodeToken(egoJwt)
@@ -97,6 +115,10 @@ export const isRdpcMember = (egoJwt: string) => {
   }
 }
 
+/**
+ * takes a scope string and returns an object for interpretation
+ * @param scope should be of the format `<policy>.<permission>`
+ */
 export const parseScope = (scope: string): PermissionScopeObj => {
   const permission = scope.split('.')[1]
   if (isPermission(permission)) {
@@ -109,6 +131,10 @@ export const parseScope = (scope: string): PermissionScopeObj => {
   }
 }
 
+/**
+ * takes an PermissionScopeObj and returns a scope string in the format `<policy>.<permission>`
+ * @param scopeObj
+ */
 export const serializeScope = (scopeObj: PermissionScopeObj): string => {
   if (isPermission(scopeObj.permission)) {
     return `${scopeObj.policy}.${scopeObj.permission}`
@@ -117,7 +143,12 @@ export const serializeScope = (scopeObj: PermissionScopeObj): string => {
   }
 }
 
-export const getAuthorizedProgramScopes = (egoJwt: string): PermissionScopeObj[] => {
+/**
+ * get an array of PermissionScopeObj which gives at least .WRITE permission to the token
+ * does not return entries that are given .DENY
+ * @param egoJwt
+ */
+export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] => {
   const data = decodeToken(egoJwt)
   const permissions = data.context.user.permissions
   const programPermissions = permissions.filter(p => {
@@ -137,24 +168,36 @@ export const getAuthorizedProgramScopes = (egoJwt: string): PermissionScopeObj[]
   }, [])
 }
 
+/**
+ * check if a given JWT can read program with given id
+ * @param args
+ */
 export const canReadProgram = (args: { egoJwt: string; programId: string }): boolean => {
-  const authorizedProgramScopes = getAuthorizedProgramScopes(args.egoJwt)
+  const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
   return authorizedProgramScopes.some(({ policy }) => policy.includes(args.programId))
 }
 
+/**
+ * check if a given JWT can write program with given id
+ * @param args
+ */
 export const canWriteProgram = (args: { egoJwt: string; programId: string }): boolean => {
-  const authorizedProgramScopes = getAuthorizedProgramScopes(args.egoJwt)
+  const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
   return authorizedProgramScopes.some(
     ({ policy, permission }) =>
       policy.includes(args.programId) && [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
   )
 }
 
+/**
+ * check if a given JWT has admin access to program with given id
+ * @param args
+ */
 export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boolean => {
   return canWriteProgram(args)
 
   /** TODO: switch to below logic when .ADMIN scope is available */
-  // const authorizedProgramScopes = getAuthorizedProgramScopes(args.egoJwt);
+  // const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt);
   // return authorizedProgramScopes.some(
   //   ({ policy, permission }) => policy.includes(args.programId) && permission === PERMISSIONS.ADMIN,
   // );
@@ -168,7 +211,7 @@ export default {
   isRdpcMember,
   parseScope,
   serializeScope,
-  getAuthorizedProgramScopes,
+  getReadableProgramScopes,
   canReadProgram,
   canWriteProgram,
   isProgramAdmin
