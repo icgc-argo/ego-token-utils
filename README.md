@@ -28,6 +28,7 @@ This project uses the following bootstrap setup: [typescript-library-starter](ht
 - `npm i`: install dependencies
 - `npm run test:watch`: to start developing with interactive live test
 - `npm run build`: to trigger build (for local testing only)
+- `npm run commit`: to commit changes. __IMPORTANT__ as commits are analyzed for release
 - Once happy, submit a PR to the `develop` branch.
 - Releases happen automatically through Travis once merged to `master`
 
