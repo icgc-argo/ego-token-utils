@@ -23,6 +23,7 @@ This repo contains a library of utility functions written in __Typescript__ inte
 This project uses the following bootstrap setup: [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
 
 ### Notes
+- `npm i`: install dependencies
 - `npm run test:watch`: to start developing with interactive live test
 - `npm run build:watch`: to trigger build on change.
 - Once happy, submit a PR to the `develop` branch.
