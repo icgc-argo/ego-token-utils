@@ -4,10 +4,10 @@
 
 This repo contains a library of utility functions written in __Typescript__ interpret __Ego JWT__ content in the Argo system.
 
-## Usage:
+## Usage
 - install: 
     ```
-    npm install @icgc-argo/ego-token-utils
+    npm i --save @icgc-argo/ego-token-utils
     ```
 - use:
     ```typescript
