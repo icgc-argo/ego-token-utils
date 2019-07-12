@@ -1,5 +1,7 @@
 # Ego Token Utils
 [![Coverage Status](https://coveralls.io/repos/github/icgc-argo/ego-token-utils/badge.svg?branch=master)](https://coveralls.io/github/icgc-argo/ego-token-utils?branch=master)
+[![Build Status](https://travis-ci.org/icgc-argo/ego-token-utils.svg?branch=master)](https://travis-ci.org/icgc-argo/ego-token-utils)
+
 
 This project uses the following bootstrap setup:
 
