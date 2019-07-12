@@ -1,4 +1,3 @@
-//@flow
 import * as jwtDecode from 'jwt-decode'
 
 const PERMISSIONS: {
