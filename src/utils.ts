@@ -1,4 +1,6 @@
-import * as jwtDecode from 'jwt-decode'
+import * as _jwtDecode from 'jwt-decode'
+
+const jwtDecode = _jwtDecode
 
 const PERMISSIONS: {
   READ: string
