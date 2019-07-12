@@ -5,14 +5,18 @@ import {
   canReadProgram,
   canWriteProgram,
   isProgramAdmin,
-  isPermission
+  isPermission,
+  isRdpcMember,
+  parseScope,
+  serializeScope,
+  decodeToken
 } from '../src/utils'
 
 /** has the following scopes:
- *  "PROGRAM-WP-CPMP-US.READ"
- *  "PROGRAMDATA-PACA-AU.WRITE"
- *  "PROGRAMDATA-WP-CPMP-US.WRITE"
- *  "PROGRAM-PACA-AU.READ"
+ * "PROGRAM-WP-CPMP-US.READ"
+ * "PROGRAMDATA-PACA-AU.WRITE"
+ * "PROGRAMDATA-WP-CPMP-US.WRITE"
+ * "PROGRAM-PACA-AU.READ"
  **/
 const DATA_SUBMITTER = `eyJhbGciOiJSUzI1NiJ9.ewogICJpYXQiOiAxNTYyNjc5MjA5LAogICJleHAiOiAyMDYyNzY1NjA5LAogICJzdWIiOiAiM2RjNjU5MmItMTQzNi00ZDVlLTk5MzEtMTRiZjFjZmVlZGU4IiwKICAiaXNzIjogImVnbyIsCiAgImF1ZCI6IFtdLAogICJqdGkiOiAiZDUyZTFjOGYtYzVkYS00ZGRkLTgzODUtODI2OWM4NzcxYzhiIiwKICAiY29udGV4dCI6IHsKICAgICJzY29wZSI6IFsKICAgICAgIlBST0dSQU0tV1AtQ1BNUC1VUy5SRUFEIiwKICAgICAgIlBST0dSQU1EQVRBLVBBQ0EtQVUuV1JJVEUiLAogICAgICAiUFJPR1JBTURBVEEtV1AtQ1BNUC1VUy5XUklURSIsCiAgICAgICJQUk9HUkFNLVBBQ0EtQVUuUkVBRCIKICAgIF0sCiAgICAidXNlciI6IHsKICAgICAgIm5hbWUiOiAiYXJnby5kYXRhc3VibWl0dGVyQGdtYWlsLmNvbSIsCiAgICAgICJlbWFpbCI6ICJhcmdvLmRhdGFzdWJtaXR0ZXJAZ21haWwuY29tIiwKICAgICAgInN0YXR1cyI6ICJBUFBST1ZFRCIsCiAgICAgICJmaXJzdE5hbWUiOiAiRGFuIiwKICAgICAgImxhc3ROYW1lIjogIkRhdGEgU3VibWl0dHRlciIsCiAgICAgICJjcmVhdGVkQXQiOiAxNTYyNjI1NjQxODYxLAogICAgICAibGFzdExvZ2luIjogMTU2MjY3OTIwOTA1MCwKICAgICAgInByZWZlcnJlZExhbmd1YWdlIjogbnVsbCwKICAgICAgInR5cGUiOiAiVVNFUiIsCiAgICAgICJwZXJtaXNzaW9ucyI6IFsKICAgICAgICAiUFJPR1JBTS1XUC1DUE1QLVVTLlJFQUQiLAogICAgICAgICJQUk9HUkFNREFUQS1XUC1DUE1QLVVTLldSSVRFIiwKICAgICAgICAiUFJPR1JBTS1QQUNBLUFVLlJFQUQiLAogICAgICAgICJQUk9HUkFNREFUQS1QQUNBLUFVLldSSVRFIgogICAgICBdCiAgICB9CiAgfSwKICAic2NvcGUiOiBbCiAgICAiUFJPR1JBTS1XUC1DUE1QLVVTLlJFQUQiLAogICAgIlBST0dSQU1EQVRBLVBBQ0EtQVUuV1JJVEUiLAogICAgIlBST0dSQU1EQVRBLVdQLUNQTVAtVVMuV1JJVEUiLAogICAgIlBST0dSQU0tUEFDQS1BVS5SRUFEIgogIF0KfQ==.bNyAjQZnTynVVUwGIYWvwnf0Bu-TihJrgncMRFHfd1S_oFV9mAU7Bf-W-J4uTtnWnWurK1qsGBHJ3QO3SDiBIhaRRj4R9qAY6fDkELNamc3E7Wxa52fmikZyo0PazdmGSEefNAW1poyjZa7XCnGYDQhFNHp9a9afvAuthRqRKXA6RV5NLtJ9WUNsoA_jg9i8z4bNQb8gubLP_e3340u7G6fFR5O8yYXtOJFblNDSFbG9_OFLpZxz-iUTCAQ5tH_aDeSgCfi780BJN9sI85rBxtpVkHwkZgLBBmv0_snVKb5s-zGr4beXbh1rBKxcAd43BKCDvZbZy4YsEmGd1JQ6uA`
 
@@ -34,6 +38,52 @@ const EXPIRED_TOKEN =
 
 const BOGUS_PROGRAM_ID = 'BOGUS_PROGRAM'
 
+describe('isRdpcMember', () => {
+  it('should invalidate all non RDPC tokens', () => {
+    ;[DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
+      expect(isRdpcMember(token)).toBe(false)
+    })
+  })
+  it('should return false if failed', () => {
+    expect(isRdpcMember('ssdfg')).toBe(false)
+  })
+})
+
+describe('parseScope', () => {
+  it('should parse valid scopes correctly', () => {
+    expect(parseScope('PROGRAM-WP-CPMP-US.READ')).toEqual({
+      policy: 'PROGRAM-WP-CPMP-US',
+      permission: 'READ'
+    })
+    expect(parseScope('PROGRAM-WP-CPMP-US.WRITE')).toEqual({
+      policy: 'PROGRAM-WP-CPMP-US',
+      permission: 'WRITE'
+    })
+    expect(parseScope('PROGRAM-WP-CPMP-US.ADMIN')).toEqual({
+      policy: 'PROGRAM-WP-CPMP-US',
+      permission: 'ADMIN'
+    })
+    expect(parseScope('PROGRAM-WP-CPMP-US.DENY')).toEqual({
+      policy: 'PROGRAM-WP-CPMP-US',
+      permission: 'DENY'
+    })
+  })
+  it('should throw error ', () => {
+    expect(() => parseScope('PROGRAM-WP-CPMP-US.sdfgsdfg')).toThrow()
+  })
+})
+
+describe('serializeScope', () => {
+  it('should serialize properly', () => {
+    expect(
+      serializeScope({
+        policy: 'PROGRAM-WP-CPMP-US',
+        permission: 'DENY'
+      })
+    ).toBe('PROGRAM-WP-CPMP-US.DENY')
+  })
+})
+
 describe('isPermission', () => {
   it('should validates all permissions', () => {
     ;['READ', 'WRITE', 'ADMIN', 'DENY'].forEach(str => {
@@ -50,6 +100,9 @@ describe('isPermission', () => {
 describe('isValidJwt', () => {
   it('should return false if undefined', () => {
     expect(isValidJwt()).toBe(false)
+  })
+  it('should return false if failed', () => {
+    expect(isValidJwt('sfgsdfg')).toBe(false)
   })
   it('should return true for valid jwt', () => {
     ;[DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
@@ -80,6 +133,9 @@ describe('isDccMember', () => {
   })
   it('should validate non DCC member as such', () => {
     expect(isDccMember(DATA_SUBMITTER)).toBe(false)
+  })
+  it('should return false if fail', () => {
+    expect(isDccMember('asdfsdf')).toBe(false)
   })
 })
 
