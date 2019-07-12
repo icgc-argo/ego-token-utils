@@ -18,6 +18,7 @@ This repo contains a library of utility functions written in __Typescript__ inte
     TokenUtils.canReadProgram(egoJwt, "PROGRAM-TEST-AU.READ")
     ...
     ```
+Interactive documentation is available at: https://icgc-argo.github.io/ego-token-utils/
 
 ## Development
 This project uses the following bootstrap setup: [typescript-library-starter](https://github.com/alexjoverm/typescript-library-starter)
