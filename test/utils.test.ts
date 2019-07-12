@@ -2,7 +2,7 @@ import utils from '../src/ego-token-utils'
 
 const {
   isValidJwt,
-  getAuthorizedProgramScopes,
+  getReadableProgramScopes,
   isDccMember,
   canReadProgram,
   canWriteProgram,
@@ -116,16 +116,16 @@ describe('isValidJwt', () => {
   })
 })
 
-describe('getAuthorizedProgramScopes', () => {
+describe('getReadableProgramScopes', () => {
   it('should return authorized program scopes', () => {
-    expect(getAuthorizedProgramScopes(DATA_SUBMITTER)).toEqual([
+    expect(getReadableProgramScopes(DATA_SUBMITTER)).toEqual([
       { policy: 'PROGRAM-WP-CPMP-US', permission: 'READ' },
       { policy: 'PROGRAM-PACA-AU', permission: 'READ' }
     ])
-    expect(getAuthorizedProgramScopes(PROGRAM_ADMIN)).toEqual([
+    expect(getReadableProgramScopes(PROGRAM_ADMIN)).toEqual([
       { policy: 'PROGRAM-PACA-AU', permission: 'WRITE' }
     ])
-    expect(getAuthorizedProgramScopes(DCC_USER)).toEqual([])
+    expect(getReadableProgramScopes(DCC_USER)).toEqual([])
   })
 })
 
