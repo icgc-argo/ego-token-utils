@@ -148,6 +148,9 @@ describe('canReadProgram', () => {
   it('should invalidate read access', () => {
     expect(canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: BOGUS_PROGRAM_ID })).toBe(false)
   })
+  it('should give dcc members access', () => {
+    expect(canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
+  })
 })
 
 describe('canWriteProgram', () => {
@@ -159,6 +162,9 @@ describe('canWriteProgram', () => {
   })
   it('should invalidate read only access', () => {
     expect(canWriteProgram({ egoJwt: DATA_SUBMITTER, programId: 'WP-CPMP-US' })).toBe(false)
+  })
+  it('should give dcc members access', () => {
+    expect(canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
   })
 })
 
