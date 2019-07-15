@@ -174,7 +174,10 @@ export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] =
  */
 export const canReadProgram = (args: { egoJwt: string; programId: string }): boolean => {
   const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
-  return authorizedProgramScopes.some(({ policy }) => policy.includes(args.programId))
+  return (
+    isDccMember(args.egoJwt) ||
+    authorizedProgramScopes.some(({ policy }) => policy.includes(args.programId))
+  )
 }
 
 /**
@@ -183,9 +186,13 @@ export const canReadProgram = (args: { egoJwt: string; programId: string }): boo
  */
 export const canWriteProgram = (args: { egoJwt: string; programId: string }): boolean => {
   const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
-  return authorizedProgramScopes.some(
-    ({ policy, permission }) =>
-      policy.includes(args.programId) && [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
+  return (
+    isDccMember(args.egoJwt) ||
+    authorizedProgramScopes.some(
+      ({ policy, permission }) =>
+        policy.includes(args.programId) &&
+        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
+    )
   )
 }
 
