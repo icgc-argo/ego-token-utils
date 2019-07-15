@@ -195,6 +195,10 @@ export const canWriteProgram = (args: { egoJwt: string; programId: string }): bo
   )
 }
 
+/**
+ * checks if a given token can read any program at all
+ * @param egoJwt the ego token
+ */
 export const canReadSomeProgram = (egoJwt: string) => {
   return isDccMember(egoJwt) || !!getReadableProgramScopes(egoJwt).length
 }
