@@ -174,10 +174,8 @@ export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] =
  */
 export const canReadProgram = (args: { egoJwt: string; programId: string }): boolean => {
   const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
-  return (
-    isDccMember(args.egoJwt) ||
-    authorizedProgramScopes.some(({ policy }) => policy.includes(args.programId))
-  )
+  const programIds = authorizedProgramScopes.map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
+  return isDccMember(args.egoJwt) || programIds.some(id => id === args.programId)
 }
 
 /**
@@ -188,12 +186,21 @@ export const canWriteProgram = (args: { egoJwt: string; programId: string }): bo
   const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
   return (
     isDccMember(args.egoJwt) ||
-    authorizedProgramScopes.some(
-      ({ policy, permission }) =>
-        policy.includes(args.programId) &&
-        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
-    )
+    authorizedProgramScopes.some(({ policy, permission }) => {
+      const programId = policy.replace(PROGRAM_PREFIX, '')
+      return (
+        programId === args.programId && [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
+      )
+    })
   )
+}
+
+/**
+ * checks if a given token can read any program at all
+ * @param egoJwt the ego token
+ */
+export const canReadSomeProgram = (egoJwt: string) => {
+  return isDccMember(egoJwt) || !!getReadableProgramScopes(egoJwt).length
 }
 
 /**
@@ -221,5 +228,6 @@ export default {
   getReadableProgramScopes,
   canReadProgram,
   canWriteProgram,
-  isProgramAdmin
+  isProgramAdmin,
+  canReadSomeProgram
 }
