@@ -12,7 +12,8 @@ const {
   parseScope,
   serializeScope,
   canReadSomeProgram,
-  decodeToken
+  decodeToken,
+  getReadableProgramShortNames
 } = utils
 
 /** has the following scopes:
@@ -122,6 +123,14 @@ describe('getReadableProgramScopes', () => {
       { policy: 'PROGRAM-PACA-AU', permission: 'WRITE' }
     ])
     expect(getReadableProgramScopes(DCC_USER)).toEqual([])
+  })
+})
+
+describe('getReadableProgramShortNames', () => {
+  it('should return authorized program names', () => {
+    expect(getReadableProgramShortNames(DATA_SUBMITTER)).toEqual([])
+    expect(getReadableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
+    expect(getReadableProgramShortNames(DCC_USER)).toEqual([])
   })
 })
 
