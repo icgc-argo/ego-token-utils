@@ -144,8 +144,8 @@ export const serializeScope = (scopeObj: PermissionScopeObj): string => {
 }
 
 /**
- * get an array of PermissionScopeObj which gives at least .WRITE permission to the token
- * does not return entries that are given .DENY
+ * get an array of PermissionScopeObj which gives at least `.READ` permission to the token
+ * does not return entries that are given `.DENY`
  * @param egoJwt
  */
 export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] => {
@@ -166,6 +166,15 @@ export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] =
     }
     return acc
   }, [])
+}
+
+/**
+ * get an array of program short names where the user has been given at least `.READ` permission
+ * in the provided token
+ * @param egoJwt
+ */
+export const getReadableProgramShortNames = (egoJwt: string): string[] => {
+  return getReadableProgramScopes(egoJwt).map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
 }
 
 /**
@@ -215,10 +224,6 @@ export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boo
   // return authorizedProgramScopes.some(
   //   ({ policy, permission }) => policy.includes(args.programId) && permission === PERMISSIONS.ADMIN,
   // );
-}
-
-export const getReadableProgramShortNames = (egoJwt: string): string[] => {
-  return getReadableProgramScopes(egoJwt).map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
 }
 
 export default {
