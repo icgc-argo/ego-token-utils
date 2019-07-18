@@ -217,6 +217,10 @@ export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boo
   // );
 }
 
+export const getReadableProgramShortNames = (egoJwt: string): string[] => {
+  return getReadableProgramScopes(egoJwt).map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
+}
+
 export default {
   isPermission,
   decodeToken,
@@ -229,5 +233,6 @@ export default {
   canReadProgram,
   canWriteProgram,
   isProgramAdmin,
-  canReadSomeProgram
+  canReadSomeProgram,
+  getReadableProgramShortNames
 }
