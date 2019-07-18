@@ -13,7 +13,10 @@ const {
   serializeScope,
   canReadSomeProgram,
   decodeToken,
-  getReadableProgramShortNames
+  getReadableProgramShortNames,
+  getWriteableProgramScopes,
+  canWriteSomeProgram,
+  getWriteableProgramShortNames
 } = utils
 
 /** has the following scopes:
@@ -126,11 +129,29 @@ describe('getReadableProgramScopes', () => {
   })
 })
 
+describe('getWriteableProgramScopes', () => {
+  it('should return authorized program scopes', () => {
+    expect(getWriteableProgramScopes(DATA_SUBMITTER)).toEqual([])
+    expect(getWriteableProgramScopes(PROGRAM_ADMIN)).toEqual([
+      { policy: 'PROGRAM-PACA-AU', permission: 'WRITE' }
+    ])
+    expect(getWriteableProgramScopes(DCC_USER)).toEqual([])
+  })
+})
+
 describe('getReadableProgramShortNames', () => {
   it('should return authorized program names', () => {
     expect(getReadableProgramShortNames(DATA_SUBMITTER)).toEqual([])
     expect(getReadableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
     expect(getReadableProgramShortNames(DCC_USER)).toEqual([])
+  })
+})
+
+describe('getWriteableProgramShortNames', () => {
+  it('should return authorized program names', () => {
+    expect(getWriteableProgramShortNames(DATA_SUBMITTER)).toEqual([])
+    expect(getWriteableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
+    expect(getWriteableProgramShortNames(DCC_USER)).toEqual([])
   })
 })
 
@@ -197,5 +218,17 @@ describe('canReadSomeProgram', () => {
   })
   it('should return false for data submitters with no program access', () => {
     expect(canReadSomeProgram(DATA_SUBMITTER)).toBe(false)
+  })
+})
+
+describe('canWriteSomeProgram', () => {
+  it('should return true for dcc members', () => {
+    expect(canWriteSomeProgram(DCC_USER)).toBe(true)
+  })
+  it('should return true for program admin', () => {
+    expect(canWriteSomeProgram(PROGRAM_ADMIN)).toBe(true)
+  })
+  it('should return false for data submitters with no program access', () => {
+    expect(canWriteSomeProgram(DATA_SUBMITTER)).toBe(false)
   })
 })
