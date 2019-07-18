@@ -252,15 +252,8 @@ export const canWriteSomeProgram = (egoJwt: string) => {
  * check if a given JWT has admin access to program with given id
  * @param args
  */
-export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boolean => {
-  return canWriteProgram(args)
-
-  /** TODO: switch to below logic when .ADMIN scope is available */
-  // const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt);
-  // return authorizedProgramScopes.some(
-  //   ({ policy, permission }) => policy.includes(args.programId) && permission === PERMISSIONS.ADMIN,
-  // );
-}
+export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boolean =>
+  canWriteProgram(args)
 
 export default {
   isPermission,
