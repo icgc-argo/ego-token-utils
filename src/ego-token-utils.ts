@@ -52,26 +52,26 @@ type PermissionScopeObj = {
  * checks if a string is a proper permission
  * @param str
  */
-export const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
+const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
   Object.values(PERMISSIONS).includes(str)
 
 /**
  * wrapper for jwt-decode that provides static Ego typing
  * @param egoJwt
  */
-export const decodeToken = (egoJwt: string): EgoJwtData => jwtDecode(egoJwt)
+const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtData => jwtDecode(egoJwt)
 
 /**
  * checks if a given jwt is valid and has not expired.
  * currently does not validate against Ego signature
  * @param egoJwt
  */
-export const isValidJwt = (egoJwt?: string) => {
+const isValidJwt = (egoPublicKey: string) => (egoJwt?: string) => {
   try {
     if (!egoJwt) {
       return false
     } else {
-      const { exp } = decodeToken(egoJwt)
+      const { exp } = decodeToken(egoPublicKey)(egoJwt)
       return exp * 1000 > Date.now()
     }
   } catch (err) {
@@ -83,9 +83,9 @@ export const isValidJwt = (egoJwt?: string) => {
  * check if a given jwt has dcc access
  * @param egoJwt
  */
-export const isDccMember = (egoJwt: string) => {
+const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
-    const data = decodeToken(egoJwt)
+    const data = decodeToken(egoPublicKey)(egoJwt)
     const permissions = data.context.user.permissions
     return permissions.some(p => p.includes(DCC_PREFIX))
   } catch (err) {
@@ -97,9 +97,9 @@ export const isDccMember = (egoJwt: string) => {
  * check if a given jwt has rdpc access
  * @param egoJwt
  */
-export const isRdpcMember = (egoJwt: string) => {
+const isRdpcMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
-    const data = decodeToken(egoJwt)
+    const data = decodeToken(egoPublicKey)(egoJwt)
     const permissions = data.context.user.permissions
     const rdpcPermissions = permissions.filter(p => {
       const policy = p.split('.')[0]
@@ -119,7 +119,7 @@ export const isRdpcMember = (egoJwt: string) => {
  * takes a scope string and returns an object for interpretation
  * @param scope should be of the format `<policy>.<permission>`
  */
-export const parseScope = (scope: string): PermissionScopeObj => {
+const parseScope = (scope: string): PermissionScopeObj => {
   const permission = scope.split('.')[1]
   if (isPermission(permission)) {
     return {
@@ -135,7 +135,7 @@ export const parseScope = (scope: string): PermissionScopeObj => {
  * takes an PermissionScopeObj and returns a scope string in the format `<policy>.<permission>`
  * @param scopeObj
  */
-export const serializeScope = (scopeObj: PermissionScopeObj): string => {
+const serializeScope = (scopeObj: PermissionScopeObj): string => {
   if (isPermission(scopeObj.permission)) {
     return `${scopeObj.policy}.${scopeObj.permission}`
   } else {
@@ -148,8 +148,10 @@ export const serializeScope = (scopeObj: PermissionScopeObj): string => {
  * does not return entries that are given `.DENY`
  * @param egoJwt
  */
-export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] => {
-  const data = decodeToken(egoJwt)
+const getReadableProgramScopes = (egoPublicKey: string) => (
+  egoJwt: string
+): PermissionScopeObj[] => {
+  const data = decodeToken(egoPublicKey)(egoJwt)
   const permissions = data.context.user.permissions
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
@@ -170,8 +172,10 @@ export const getReadableProgramScopes = (egoJwt: string): PermissionScopeObj[] =
  * does not return entries that are given `.DENY`
  * @param egoJwt
  */
-export const getWriteableProgramScopes = (egoJwt: string): PermissionScopeObj[] => {
-  const data = decodeToken(egoJwt)
+const getWriteableProgramScopes = (egoPublicKey: string) => (
+  egoJwt: string
+): PermissionScopeObj[] => {
+  const data = decodeToken(egoPublicKey)(egoJwt)
   const permissions = data.context.user.permissions
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
@@ -192,8 +196,10 @@ export const getWriteableProgramScopes = (egoJwt: string): PermissionScopeObj[] 
  * in the provided token
  * @param egoJwt
  */
-export const getReadableProgramShortNames = (egoJwt: string): string[] => {
-  return getReadableProgramScopes(egoJwt).map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
+const getReadableProgramShortNames = (egoPublicKey: string) => (egoJwt: string): string[] => {
+  return getReadableProgramScopes(egoPublicKey)(egoJwt).map(({ policy }) =>
+    policy.replace(PROGRAM_PREFIX, '')
+  )
 }
 
 /**
@@ -201,28 +207,36 @@ export const getReadableProgramShortNames = (egoJwt: string): string[] => {
  * in the provided token
  * @param egoJwt
  */
-export const getWriteableProgramShortNames = (egoJwt: string): string[] => {
-  return getWriteableProgramScopes(egoJwt).map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
+const getWriteableProgramShortNames = (egoPublicKey: string) => (egoJwt: string): string[] => {
+  return getWriteableProgramScopes(egoPublicKey)(egoJwt).map(({ policy }) =>
+    policy.replace(PROGRAM_PREFIX, '')
+  )
 }
 
 /**
  * check if a given JWT can read program with given id
  * @param args
  */
-export const canReadProgram = (args: { egoJwt: string; programId: string }): boolean => {
-  const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
+const canReadProgram = (egoPublicKey: string) => (args: {
+  egoJwt: string
+  programId: string
+}): boolean => {
+  const authorizedProgramScopes = getReadableProgramScopes(egoPublicKey)(args.egoJwt)
   const programIds = authorizedProgramScopes.map(({ policy }) => policy.replace(PROGRAM_PREFIX, ''))
-  return isDccMember(args.egoJwt) || programIds.some(id => id === args.programId)
+  return isDccMember(egoPublicKey)(args.egoJwt) || programIds.some(id => id === args.programId)
 }
 
 /**
  * check if a given JWT can write program with given id
  * @param args
  */
-export const canWriteProgram = (args: { egoJwt: string; programId: string }): boolean => {
-  const authorizedProgramScopes = getReadableProgramScopes(args.egoJwt)
+const canWriteProgram = (egoPublicKey: string) => (args: {
+  egoJwt: string
+  programId: string
+}): boolean => {
+  const authorizedProgramScopes = getReadableProgramScopes(egoPublicKey)(args.egoJwt)
   return (
-    isDccMember(args.egoJwt) ||
+    isDccMember(egoPublicKey)(args.egoJwt) ||
     authorizedProgramScopes.some(({ policy, permission }) => {
       const programId = policy.replace(PROGRAM_PREFIX, '')
       return (
@@ -236,40 +250,46 @@ export const canWriteProgram = (args: { egoJwt: string; programId: string }): bo
  * checks if a given token can read any program at all
  * @param egoJwt the ego token
  */
-export const canReadSomeProgram = (egoJwt: string) => {
-  return isDccMember(egoJwt) || !!getReadableProgramScopes(egoJwt).length
+const canReadSomeProgram = (egoPublicKey: string) => (egoJwt: string) => {
+  return (
+    isDccMember(egoPublicKey)(egoJwt) || !!getReadableProgramScopes(egoPublicKey)(egoJwt).length
+  )
 }
 
 /**
  * checks if a given token can write to any program at all
  * @param egoJwt the ego token
  */
-export const canWriteSomeProgram = (egoJwt: string) => {
-  return isDccMember(egoJwt) || !!getWriteableProgramScopes(egoJwt).length
+const canWriteSomeProgram = (egoPublicKey: string) => (egoJwt: string) => {
+  return (
+    isDccMember(egoPublicKey)(egoJwt) || !!getWriteableProgramScopes(egoPublicKey)(egoJwt).length
+  )
 }
 
 /**
  * check if a given JWT has admin access to program with given id
  * @param args
  */
-export const isProgramAdmin = (args: { egoJwt: string; programId: string }): boolean =>
-  canWriteProgram(args)
+const isProgramAdmin = (egoPublicKey: string) => (args: {
+  egoJwt: string
+  programId: string
+}): boolean => canWriteProgram(egoPublicKey)(args)
 
-export default {
-  isPermission,
-  decodeToken,
-  isValidJwt,
-  isDccMember,
-  isRdpcMember,
-  parseScope,
-  serializeScope,
-  getReadableProgramScopes,
-  getWriteableProgramScopes,
-  canReadProgram,
-  canWriteProgram,
-  isProgramAdmin,
-  canReadSomeProgram,
-  canWriteSomeProgram,
-  getReadableProgramShortNames,
-  getWriteableProgramShortNames
-}
+export default (egoPublicKey: string) => ({
+  serializeScope: serializeScope,
+  parseScope: parseScope,
+  isPermission: isPermission,
+  decodeToken: decodeToken(egoPublicKey),
+  isValidJwt: isValidJwt(egoPublicKey),
+  isDccMember: isDccMember(egoPublicKey),
+  isRdpcMember: isRdpcMember(egoPublicKey),
+  getReadableProgramScopes: getReadableProgramScopes(egoPublicKey),
+  getWriteableProgramScopes: getWriteableProgramScopes(egoPublicKey),
+  canReadProgram: canReadProgram(egoPublicKey),
+  canWriteProgram: canWriteProgram(egoPublicKey),
+  isProgramAdmin: isProgramAdmin(egoPublicKey),
+  canReadSomeProgram: canReadSomeProgram(egoPublicKey),
+  canWriteSomeProgram: canWriteSomeProgram(egoPublicKey),
+  getReadableProgramShortNames: getReadableProgramShortNames(egoPublicKey),
+  getWriteableProgramShortNames: getWriteableProgramShortNames(egoPublicKey)
+})
