@@ -1,23 +1,4 @@
-import utils from '../src/ego-token-utils'
-
-const {
-  isValidJwt,
-  getReadableProgramScopes,
-  isDccMember,
-  canReadProgram,
-  canWriteProgram,
-  isProgramAdmin,
-  isPermission,
-  isRdpcMember,
-  parseScope,
-  serializeScope,
-  canReadSomeProgram,
-  decodeToken,
-  getReadableProgramShortNames,
-  getWriteableProgramScopes,
-  canWriteSomeProgram,
-  getWriteableProgramShortNames
-} = utils
+import createValidator from '../src/ego-token-utils'
 
 /** has the following scopes:
  * "PROGRAMDATA-PACA-AU.WRITE"
@@ -36,52 +17,56 @@ const PROGRAM_ADMIN = `eyJhbGciOiJSUzI1NiJ9.ewogICJpYXQiOiAxNTYyNjc5MzY3LAogICJl
  * "song-argo-qa.WRITE"
  * "program-service.WRITE"
  **/
-const DCC_USER = `eyJhbGciOiJSUzI1NiJ9.ewogICJpYXQiOiAxNTYyNjg0NDU4LAogICJleHAiOiAyMDYyNzcwODU4LAogICJzdWIiOiAiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwKICAiaXNzIjogImVnbyIsCiAgImF1ZCI6IFtdLAogICJqdGkiOiAiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwKICAiY29udGV4dCI6IHsKICAgICJzY29wZSI6IFsKICAgICAgInNjb3JlLWFyZ28tcWEuV1JJVEUiLAogICAgICAic29uZy1hcmdvLXFhLldSSVRFIiwKICAgICAgInByb2dyYW0tc2VydmljZS5XUklURSIKICAgIF0sCiAgICAidXNlciI6IHsKICAgICAgIm5hbWUiOiAib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsCiAgICAgICJlbWFpbCI6ICJvaWNydGVzdHVzZXJAZ21haWwuY29tIiwKICAgICAgInN0YXR1cyI6ICJBUFBST1ZFRCIsCiAgICAgICJmaXJzdE5hbWUiOiAiT0lDUiIsCiAgICAgICJsYXN0TmFtZSI6ICJUZXN0ZXIiLAogICAgICAiY3JlYXRlZEF0IjogMTU2MjYyMzkwODU2MywKICAgICAgImxhc3RMb2dpbiI6IDE1NjI2ODQ0NTg0MDksCiAgICAgICJwcmVmZXJyZWRMYW5ndWFnZSI6IG51bGwsCiAgICAgICJ0eXBlIjogIlVTRVIiLAogICAgICAicGVybWlzc2lvbnMiOiBbCiAgICAgICAgInNjb3JlLWFyZ28tcWEuV1JJVEUiLAogICAgICAgICJwcm9ncmFtLXNlcnZpY2UuV1JJVEUiLAogICAgICAgICJzb25nLWFyZ28tcWEuV1JJVEUiCiAgICAgIF0KICAgIH0KICB9LAogICJzY29wZSI6IFsKICAgICJzY29yZS1hcmdvLXFhLldSSVRFIiwKICAgICJzb25nLWFyZ28tcWEuV1JJVEUiLAogICAgInByb2dyYW0tc2VydmljZS5XUklURSIKICBdCn0=.UDg7lNxdju_o7LYxDub1x5iuaqm5851l1z_d7EM15JyxNHh9EX2jfEkyGhXsuBIF9TvIW3LZtExUKS1n2OScq6bqjb5xSaw`
+const DCC_USER = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjI2ODQ0NTgsImV4cCI6MjA2Mjc3MDg1OCwic3ViIjoiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwiY29udGV4dCI6eyJzY29wZSI6WyJzY29yZS1hcmdvLXFhLldSSVRFIiwic29uZy1hcmdvLXFhLldSSVRFIiwiUFJPR1JBTVNFUlZJQ0UuV1JJVEUiXSwidXNlciI6eyJuYW1lIjoib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsImVtYWlsIjoib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsInN0YXR1cyI6IkFQUFJPVkVEIiwiZmlyc3ROYW1lIjoiT0lDUiIsImxhc3ROYW1lIjoiVGVzdGVyIiwiY3JlYXRlZEF0IjoxNTYyNjIzOTA4NTYzLCJsYXN0TG9naW4iOjE1NjI2ODQ0NTg0MDksInByZWZlcnJlZExhbmd1YWdlIjpudWxsLCJ0eXBlIjoiVVNFUiIsInBlcm1pc3Npb25zIjpbInNjb3JlLWFyZ28tcWEuV1JJVEUiLCJQUk9HUkFNU0VSVklDRS5XUklURSIsInNvbmctYXJnby1xYS5XUklURSJdfX0sInNjb3BlIjpbInNjb3JlLWFyZ28tcWEuV1JJVEUiLCJzb25nLWFyZ28tcWEuV1JJVEUiLCJQUk9HUkFNU0VSVklDRS5XUklURSJdfQ.kF-SiQ41mV44vbdhMWhzNCOLPol9lirj31rDtzHcViA`
 
 const EXPIRED_TOKEN =
-  'eyJhbGciOiJSUzI1NiJ9.ewogICJpYXQiOiAxNTYyNjg0NDU4LAogICJleHAiOiAxNTYyNzcwODU4LAogICJzdWIiOiAiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwKICAiaXNzIjogImVnbyIsCiAgImF1ZCI6IFtdLAogICJqdGkiOiAiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwKICAiY29udGV4dCI6IHsKICAgICJzY29wZSI6IFsKICAgICAgInNjb3JlLWFyZ28tcWEuV1JJVEUiLAogICAgICAic29uZy1hcmdvLXFhLldSSVRFIiwKICAgICAgInByb2dyYW0tc2VydmljZS5XUklURSIKICAgIF0sCiAgICAidXNlciI6IHsKICAgICAgIm5hbWUiOiAib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsCiAgICAgICJlbWFpbCI6ICJvaWNydGVzdHVzZXJAZ21haWwuY29tIiwKICAgICAgInN0YXR1cyI6ICJBUFBST1ZFRCIsCiAgICAgICJmaXJzdE5hbWUiOiAiT0lDUiIsCiAgICAgICJsYXN0TmFtZSI6ICJUZXN0ZXIiLAogICAgICAiY3JlYXRlZEF0IjogMTU2MjYyMzkwODU2MywKICAgICAgImxhc3RMb2dpbiI6IDE1NjI2ODQ0NTg0MDksCiAgICAgICJwcmVmZXJyZWRMYW5ndWFnZSI6IG51bGwsCiAgICAgICJ0eXBlIjogIlVTRVIiLAogICAgICAicGVybWlzc2lvbnMiOiBbCiAgICAgICAgInNjb3JlLWFyZ28tcWEuV1JJVEUiLAogICAgICAgICJwcm9ncmFtLXNlcnZpY2UuV1JJVEUiLAogICAgICAgICJzb25nLWFyZ28tcWEuV1JJVEUiCiAgICAgIF0KICAgIH0KICB9LAogICJzY29wZSI6IFsKICAgICJzY29yZS1hcmdvLXFhLldSSVRFIiwKICAgICJzb25nLWFyZ28tcWEuV1JJVEUiLAogICAgInByb2dyYW0tc2VydmljZS5XUklURSIKICBdCn0=.UDg7lNxdju_o7LYxDub1x5iuaqm5851l1z_d7EM15JyxNHh9EX2jfEkyGhXsuBIF9TvIW3LZtExUKS1n2OScq6bqjb5xSaw'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjI2ODQ0NTgsImV4cCI6MTU2Mjc3MDg1OCwic3ViIjoiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwiY29udGV4dCI6eyJzY29wZSI6WyJzY29yZS1hcmdvLXFhLldSSVRFIiwic29uZy1hcmdvLXFhLldSSVRFIiwiUFJPR1JBTVNFUlZJQ0UuV1JJVEUiXSwidXNlciI6eyJuYW1lIjoib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsImVtYWlsIjoib2ljcnRlc3R1c2VyQGdtYWlsLmNvbSIsInN0YXR1cyI6IkFQUFJPVkVEIiwiZmlyc3ROYW1lIjoiT0lDUiIsImxhc3ROYW1lIjoiVGVzdGVyIiwiY3JlYXRlZEF0IjoxNTYyNjIzOTA4NTYzLCJsYXN0TG9naW4iOjE1NjI2ODQ0NTg0MDksInByZWZlcnJlZExhbmd1YWdlIjpudWxsLCJ0eXBlIjoiVVNFUiIsInBlcm1pc3Npb25zIjpbInNjb3JlLWFyZ28tcWEuV1JJVEUiLCJQUk9HUkFNU0VSVklDRS5XUklURSIsInNvbmctYXJnby1xYS5XUklURSJdfX0sInNjb3BlIjpbInNjb3JlLWFyZ28tcWEuV1JJVEUiLCJzb25nLWFyZ28tcWEuV1JJVEUiLCJQUk9HUkFNU0VSVklDRS5XUklURSJdfQ.1JAYtB1HUvZyvNNoUnp14GhTHrBvT67NlMUlBqqL_Rg'
 
 const BOGUS_PROGRAM_ID = 'BOGUS_PROGRAM'
+
+const PUBLIC_KEY = ''
+
+const validator = createValidator(PUBLIC_KEY)
 
 describe('isRdpcMember', () => {
   it('should invalidate all non RDPC tokens', () => {
     ;[DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
-      expect(isRdpcMember(token)).toBe(false)
+      expect(validator.isRdpcMember(token)).toBe(false)
     })
   })
   it('should return false if failed', () => {
-    expect(isRdpcMember('ssdfg')).toBe(false)
+    expect(validator.isRdpcMember('ssdfg')).toBe(false)
   })
 })
 
 describe('parseScope', () => {
   it('should parse valid scopes correctly', () => {
-    expect(parseScope('PROGRAM-WP-CPMP-US.READ')).toEqual({
+    expect(validator.parseScope('PROGRAM-WP-CPMP-US.READ')).toEqual({
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'READ'
     })
-    expect(parseScope('PROGRAM-WP-CPMP-US.WRITE')).toEqual({
+    expect(validator.parseScope('PROGRAM-WP-CPMP-US.WRITE')).toEqual({
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'WRITE'
     })
-    expect(parseScope('PROGRAM-WP-CPMP-US.ADMIN')).toEqual({
+    expect(validator.parseScope('PROGRAM-WP-CPMP-US.ADMIN')).toEqual({
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'ADMIN'
     })
-    expect(parseScope('PROGRAM-WP-CPMP-US.DENY')).toEqual({
+    expect(validator.parseScope('PROGRAM-WP-CPMP-US.DENY')).toEqual({
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'DENY'
     })
   })
   it('should throw error ', () => {
-    expect(() => parseScope('PROGRAM-WP-CPMP-US.sdfgsdfg')).toThrow()
+    expect(() => validator.parseScope('PROGRAM-WP-CPMP-US.sdfgsdfg')).toThrow()
   })
 })
 
 describe('serializeScope', () => {
   it('should serialize properly', () => {
     expect(
-      serializeScope({
+      validator.serializeScope({
         policy: 'PROGRAM-WP-CPMP-US',
         permission: 'DENY'
       })
@@ -92,143 +77,149 @@ describe('serializeScope', () => {
 describe('isPermission', () => {
   it('should validates all permissions', () => {
     ;['READ', 'WRITE', 'ADMIN', 'DENY'].forEach(str => {
-      expect(isPermission(str)).toBe(true)
+      expect(validator.isPermission(str)).toBe(true)
     })
   })
   it('should invalidate non permission', () => {
     ;['', undefined, 1, null].forEach(str => {
-      expect(isPermission(str)).toBe(false)
+      expect(validator.isPermission(str)).toBe(false)
     })
   })
 })
 
 describe('isValidJwt', () => {
   it('should return false if undefined', () => {
-    expect(isValidJwt()).toBe(false)
+    expect(validator.isValidJwt()).toBe(false)
   })
   it('should return false if failed', () => {
-    expect(isValidJwt('sfgsdfg')).toBe(false)
+    expect(validator.isValidJwt('sfgsdfg')).toBe(false)
   })
   it('should return true for valid jwt', () => {
     ;[DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
-      expect(isValidJwt(token)).toBe(true)
+      expect(validator.isValidJwt(token)).toBe(true)
     })
   })
   it('should return false for expired token', () => {
-    expect(isValidJwt(EXPIRED_TOKEN)).toBe(false)
+    expect(validator.isValidJwt(EXPIRED_TOKEN)).toBe(false)
   })
 })
 
 describe('getReadableProgramScopes', () => {
   it('should return authorized program scopes', () => {
-    expect(getReadableProgramScopes(DATA_SUBMITTER)).toEqual([])
-    expect(getReadableProgramScopes(PROGRAM_ADMIN)).toEqual([
+    expect(validator.getReadableProgramScopes(DATA_SUBMITTER)).toEqual([])
+    expect(validator.getReadableProgramScopes(PROGRAM_ADMIN)).toEqual([
       { policy: 'PROGRAM-PACA-AU', permission: 'WRITE' }
     ])
-    expect(getReadableProgramScopes(DCC_USER)).toEqual([])
+    expect(validator.getReadableProgramScopes(DCC_USER)).toEqual([])
   })
 })
 
 describe('getWriteableProgramScopes', () => {
   it('should return authorized program scopes', () => {
-    expect(getWriteableProgramScopes(DATA_SUBMITTER)).toEqual([])
-    expect(getWriteableProgramScopes(PROGRAM_ADMIN)).toEqual([
+    expect(validator.getWriteableProgramScopes(DATA_SUBMITTER)).toEqual([])
+    expect(validator.getWriteableProgramScopes(PROGRAM_ADMIN)).toEqual([
       { policy: 'PROGRAM-PACA-AU', permission: 'WRITE' }
     ])
-    expect(getWriteableProgramScopes(DCC_USER)).toEqual([])
+    expect(validator.getWriteableProgramScopes(DCC_USER)).toEqual([])
   })
 })
 
 describe('getReadableProgramShortNames', () => {
   it('should return authorized program names', () => {
-    expect(getReadableProgramShortNames(DATA_SUBMITTER)).toEqual([])
-    expect(getReadableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
-    expect(getReadableProgramShortNames(DCC_USER)).toEqual([])
+    expect(validator.getReadableProgramShortNames(DATA_SUBMITTER)).toEqual([])
+    expect(validator.getReadableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
+    expect(validator.getReadableProgramShortNames(DCC_USER)).toEqual([])
   })
 })
 
 describe('getWriteableProgramShortNames', () => {
   it('should return authorized program names', () => {
-    expect(getWriteableProgramShortNames(DATA_SUBMITTER)).toEqual([])
-    expect(getWriteableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
-    expect(getWriteableProgramShortNames(DCC_USER)).toEqual([])
+    expect(validator.getWriteableProgramShortNames(DATA_SUBMITTER)).toEqual([])
+    expect(validator.getWriteableProgramShortNames(PROGRAM_ADMIN)).toEqual(['PACA-AU'])
+    expect(validator.getWriteableProgramShortNames(DCC_USER)).toEqual([])
   })
 })
 
 describe('isDccMember', () => {
   it('should validate DCC member as such', () => {
-    expect(isDccMember(DCC_USER)).toBe(true)
+    expect(validator.isDccMember(DCC_USER)).toBe(true)
   })
   it('should validate non DCC member as such', () => {
-    expect(isDccMember(DATA_SUBMITTER)).toBe(false)
+    expect(validator.isDccMember(DATA_SUBMITTER)).toBe(false)
   })
   it('should return false if fail', () => {
-    expect(isDccMember('asdfsdf')).toBe(false)
+    expect(validator.isDccMember('asdfsdf')).toBe(false)
   })
 })
 
 describe('canReadProgram', () => {
   it('should validate read access', () => {
-    expect(canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
+    expect(validator.canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
   })
   it('should handle "" for programId correctly', () => {
-    expect(canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: '' })).toBe(false)
+    expect(validator.canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: '' })).toBe(false)
   })
   it('should invalidate read access', () => {
-    expect(canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: BOGUS_PROGRAM_ID })).toBe(false)
+    expect(validator.canReadProgram({ egoJwt: PROGRAM_ADMIN, programId: BOGUS_PROGRAM_ID })).toBe(
+      false
+    )
   })
   it('should give dcc members access', () => {
-    expect(canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
+    expect(validator.canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
   })
 })
 
 describe('canWriteProgram', () => {
   it('should validate write access', () => {
-    expect(canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
+    expect(validator.canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
   })
   it('should invalidate write access', () => {
-    expect(canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: BOGUS_PROGRAM_ID })).toBe(false)
+    expect(validator.canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: BOGUS_PROGRAM_ID })).toBe(
+      false
+    )
   })
   it('should handle "" for programId correctly', () => {
-    expect(canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: '' })).toBe(false)
+    expect(validator.canWriteProgram({ egoJwt: PROGRAM_ADMIN, programId: '' })).toBe(false)
   })
   it('should invalidate read only access', () => {
-    expect(canWriteProgram({ egoJwt: DATA_SUBMITTER, programId: 'WP-CPMP-US' })).toBe(false)
+    expect(validator.canWriteProgram({ egoJwt: DATA_SUBMITTER, programId: 'WP-CPMP-US' })).toBe(
+      false
+    )
   })
   it('should give dcc members access', () => {
-    expect(canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
+    expect(validator.canReadProgram({ egoJwt: DCC_USER, programId: '' })).toBe(true)
   })
 })
 
 describe('isProgramAdmin', () => {
   it('should validate admin access', () => {
-    expect(isProgramAdmin({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
+    expect(validator.isProgramAdmin({ egoJwt: PROGRAM_ADMIN, programId: 'PACA-AU' })).toBe(true)
   })
   it('should invalidate read only access', () => {
-    expect(isProgramAdmin({ egoJwt: DATA_SUBMITTER, programId: 'PACA-AU' })).toBe(false)
+    expect(validator.isProgramAdmin({ egoJwt: DATA_SUBMITTER, programId: 'PACA-AU' })).toBe(false)
   })
 })
 
 describe('canReadSomeProgram', () => {
   it('should return true for dcc members', () => {
-    expect(canReadSomeProgram(DCC_USER)).toBe(true)
+    expect(validator.canReadSomeProgram(DCC_USER)).toBe(true)
   })
   it('should return true for program admin', () => {
-    expect(canReadSomeProgram(PROGRAM_ADMIN)).toBe(true)
+    expect(validator.canReadSomeProgram(PROGRAM_ADMIN)).toBe(true)
   })
   it('should return false for data submitters with no program access', () => {
-    expect(canReadSomeProgram(DATA_SUBMITTER)).toBe(false)
+    expect(validator.canReadSomeProgram(DATA_SUBMITTER)).toBe(false)
   })
 })
 
 describe('canWriteSomeProgram', () => {
   it('should return true for dcc members', () => {
-    expect(canWriteSomeProgram(DCC_USER)).toBe(true)
+    expect(validator.canWriteSomeProgram(DCC_USER)).toBe(true)
   })
   it('should return true for program admin', () => {
-    expect(canWriteSomeProgram(PROGRAM_ADMIN)).toBe(true)
+    expect(validator.canWriteSomeProgram(PROGRAM_ADMIN)).toBe(true)
   })
   it('should return false for data submitters with no program access', () => {
-    expect(canWriteSomeProgram(DATA_SUBMITTER)).toBe(false)
+    expect(validator.canWriteSomeProgram(DATA_SUBMITTER)).toBe(false)
   })
 })
