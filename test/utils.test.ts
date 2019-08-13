@@ -223,3 +223,67 @@ describe('canWriteSomeProgram', () => {
     expect(validator.canWriteSomeProgram(DATA_SUBMITTER)).toBe(false)
   })
 })
+
+describe('getReadableProgramDataScopes', () => {
+  it('should return the right list of accessible scope objects', () => {
+    expect(validator.getReadableProgramDataScopes(DATA_SUBMITTER)).toEqual([
+      {
+        permission: 'WRITE',
+        policy: 'PROGRAMDATA-PACA-AU'
+      },
+      {
+        permission: 'WRITE',
+        policy: 'PROGRAMDATA-WP-CPMP-US'
+      }
+    ])
+  })
+})
+
+describe('canReadSomeProgramData', () => {
+  it('should return true for ', () => {
+    expect(validator.canReadSomeProgramData(DATA_SUBMITTER)).toBe(true)
+  })
+})
+
+describe('canWriteSomeProgramData', () => {
+  it('should return true for ', () => {
+    expect(validator.canWriteSomeProgramData(DATA_SUBMITTER)).toBe(true)
+  })
+})
+
+describe('canReadProgramData', () => {
+  it('should return true for data submitters', () => {
+    expect(
+      validator.canReadProgramData({
+        programId: 'PACA-AU',
+        egoJwt: DATA_SUBMITTER
+      })
+    ).toBe(true)
+  })
+  it('should return true for DCC members', () => {
+    expect(
+      validator.canReadProgramData({
+        programId: 'PACA-AU',
+        egoJwt: DCC_USER
+      })
+    ).toBe(true)
+  })
+})
+describe('canWriteProgramData', () => {
+  it('should return true for data submitters', () => {
+    expect(
+      validator.canWriteProgramData({
+        programId: 'PACA-AU',
+        egoJwt: DATA_SUBMITTER
+      })
+    ).toBe(true)
+  })
+  it('should return true for DCC members', () => {
+    expect(
+      validator.canWriteProgramData({
+        programId: 'PACA-AU',
+        egoJwt: DCC_USER
+      })
+    ).toBe(true)
+  })
+})
