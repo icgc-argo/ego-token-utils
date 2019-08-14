@@ -1,6 +1,5 @@
 import {
   decodeToken,
-  DCC_PREFIX,
   RDPC_PREFIX,
   PERMISSIONS,
   PermissionScopeObj,
