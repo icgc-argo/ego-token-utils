@@ -25,9 +25,12 @@ const EXPIRED_TOKEN =
 
 const BOGUS_PROGRAM_ID = 'BOGUS_PROGRAM';
 
-const PUBLIC_KEY = '';
+const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0lOqMuPLCVusc6szklNXQL1FHhSkEgR7An+8BllBqTsRHM4bRYosseGFCbYPn8r8FsWuMDtxp0CwTyMQR2PCbJ740DdpbE1KC6jAfZxqcBete7gP0tooJtbvnA6X4vNpG4ukhtUoN9DzNOO0eqMU0Rgyy5HjERdYEWkwTNB30i9I+nHFOSj4MGLBSxNlnuo3keeomCRgtimCx+L/K3HNo0QHTG1J7RzLVAchfQT0lu3pUJ8kB+UM6/6NG+fVyysJyRZ9gadsr4gvHHckw8oUBp2tHvqBEkEdY+rt1Mf5jppt7JUV7HAPLB/qR5jhALY2FX/8MN+lPLmb/nLQQichVQIDAQAB\r\n-----END PUBLIC KEY-----`;
+const PUBLIC_KEY_WRONG = `-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0lOqMuPLCVusc6szklNXQL1FHhSkEgR7An+8BllBqTsRHM4bRYosseGFCbYPn8r8FsWuMDtxp0CwTyMQR2PCbJ740DdpbE1KC6jAfZxqcBete7gP0tooJtbvnA6X4vNpG4ukhtUoN9DzNOO0eqMU0Rgyy5HjERdYEWkwTNB30i9I+nHFOSj4MGLBSxNlnuo3keeomCRgtimCx+L/K3HNo0QHTG1J7RzLVAchfQT0lu3pUJ8kB+UM6/6NG+fVyysJyRZ9gadsr4gvHHckw8oUBp2tHvqBEkEdY+rt1Mf5jppt7JUV7HAPLB/qR5jhALY2FX/8MN+lPLmb/nLQQichVQIDAQAC\r\n-----END PUBLIC KEY-----`;
 
 const validator = createValidator(PUBLIC_KEY);
+const badKeyValidator = createValidator(PUBLIC_KEY_WRONG);
+const noKeyValidator = createValidator('');
 
 describe('isRdpcMember', () => {
   it('should invalidate all non RDPC tokens', () => {
@@ -102,6 +105,29 @@ describe('isValidJwt', () => {
   });
   it('should return false for expired token', () => {
     expect(validator.isValidJwt(EXPIRED_TOKEN)).toBe(false);
+  });
+  it('should return false for the wrong public key', () => {
+    expect(badKeyValidator.isValidJwt(DCC_USER)).toBe(false);
+  });
+  it('should return false for no provided public key', () => {
+    expect(noKeyValidator.isValidJwt(DCC_USER)).toBe(false);
+  });
+});
+
+describe('decodeToken', () => {
+  it('should return data for a valid token', () => {
+    const decoded = validator.decodeToken(DCC_USER);
+    expect(decoded.context.user.name).toBe('oicrtestuser@gmail.com');
+    expect(decoded.context.scope.length).toBeGreaterThan(0);
+  });
+  it('should throw error for invalid token', () => {
+    expect(() => validator.decodeToken(EXPIRED_TOKEN)).toThrowError();
+  });
+  it('should throw error for valid token with wrong public key', () => {
+    expect(() => badKeyValidator.decodeToken(DCC_USER)).toThrowError();
+  });
+  it('should throw error for valid token with no public key', () => {
+    expect(() => noKeyValidator.decodeToken(DCC_USER)).toThrowError();
   });
 });
 

@@ -2,15 +2,16 @@ import {
   PermissionScopeObj,
   decodeToken,
   PROGRAM_DATA_PREFIX,
-  isDccMember,
   PERMISSIONS,
   parseScope,
 } from './common';
 
+import { isDccMember } from './argoRoleChecks';
+
 export const getReadableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoJwt);
+  const data = decodeToken(egoPublicKey)(egoJwt);
   const permissions = data.context.scope;
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
@@ -33,7 +34,7 @@ export const getReadableProgramDataNames = (egoPublicKey: string) => (egoJwt: st
 export const getWritableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoJwt);
+  const data = decodeToken(egoPublicKey)(egoJwt);
   const permissions = data.context.scope;
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
