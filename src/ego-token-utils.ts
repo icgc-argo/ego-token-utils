@@ -45,8 +45,8 @@ const isValidJwt = (egoPublicKey: string) => (egoJwt?: string) => {
 const isRdpcMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
     const data = decodeToken(egoPublicKey)(egoJwt)
-    const permissions = data.context.user.permissions
-    const rdpcPermissions = permissions.filter(p => {
+    const scopes = data.context.scope
+    const rdpcPermissions = scopes.filter(p => {
       const policy = p.split('.')[0]
       return policy.indexOf(RDPC_PREFIX) === 0
     })
@@ -81,7 +81,7 @@ const getReadableProgramScopes = (egoPublicKey: string) => (
   egoJwt: string
 ): PermissionScopeObj[] => {
   const data = decodeToken(egoPublicKey)(egoJwt)
-  const permissions = data.context.user.permissions
+  const permissions = data.context.scope
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
     const output = policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0
@@ -105,7 +105,7 @@ const getWriteableProgramScopes = (egoPublicKey: string) => (
   egoJwt: string
 ): PermissionScopeObj[] => {
   const data = decodeToken(egoPublicKey)(egoJwt)
-  const permissions = data.context.user.permissions
+  const permissions = data.context.scope
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
     const output = policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0
