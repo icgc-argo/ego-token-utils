@@ -11,7 +11,7 @@ export const getReadableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string
 ): PermissionScopeObj[] => {
   const data = decodeToken(egoPublicKey)(egoJwt)
-  const permissions = data.context.user.permissions
+  const permissions = data.context.scope
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
     const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0
@@ -34,7 +34,7 @@ export const getWritableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string
 ): PermissionScopeObj[] => {
   const data = decodeToken(egoPublicKey)(egoJwt)
-  const permissions = data.context.user.permissions
+  const permissions = data.context.scope
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0]
     const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0

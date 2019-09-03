@@ -37,10 +37,8 @@ export type EgoJwtData = {
       lastLogin: number
       preferredLanguage: string | undefined
       type: 'ADMIN' | 'USER'
-      permissions: string[]
     }
   }
-  scope: string[]
 }
 
 export type PermissionScopeObj = {
@@ -69,7 +67,7 @@ export const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtDat
 export const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
     const data = decodeToken(egoPublicKey)(egoJwt)
-    const permissions = data.context.user.permissions
+    const permissions = data.context.scope
     return permissions.some(p => p.includes(DCC_PREFIX))
   } catch (err) {
     return false
