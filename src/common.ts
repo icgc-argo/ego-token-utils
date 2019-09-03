@@ -57,8 +57,7 @@ export const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
  * wrapper for jwt-decode that provides static Ego typing
  * @param egoJwt
  */
-export const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtData =>
-  jwtDecode(egoJwt);
+export const decodeToken = (egoJwt: string): EgoJwtData => jwtDecode(egoJwt);
 
 /**
  * check if a given jwt has dcc access
@@ -66,7 +65,7 @@ export const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtDat
  */
 export const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
-    const data = decodeToken(egoPublicKey)(egoJwt);
+    const data = decodeToken(egoJwt);
     const permissions = data.context.scope;
     return permissions.some(p => p.includes(DCC_PREFIX));
   } catch (err) {

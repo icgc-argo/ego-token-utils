@@ -30,7 +30,7 @@ const isValidJwt = (egoPublicKey: string) => (egoJwt?: string) => {
     if (!egoJwt) {
       return false;
     } else {
-      const { exp } = decodeToken(egoPublicKey)(egoJwt);
+      const { exp } = decodeToken(egoJwt);
       return exp * 1000 > Date.now();
     }
   } catch (err) {
@@ -44,7 +44,7 @@ const isValidJwt = (egoPublicKey: string) => (egoJwt?: string) => {
  */
 const isRdpcMember = (egoPublicKey: string) => (egoJwt: string) => {
   try {
-    const data = decodeToken(egoPublicKey)(egoJwt);
+    const data = decodeToken(egoJwt);
     const scopes = data.context.scope;
     const rdpcPermissions = scopes.filter(p => {
       const policy = p.split('.')[0];
@@ -80,7 +80,7 @@ const serializeScope = (scopeObj: PermissionScopeObj): string => {
 const getReadableProgramScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
+  const data = decodeToken(egoJwt);
   const permissions = data.context.scope;
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
@@ -105,7 +105,7 @@ const getReadableProgramScopes = (egoPublicKey: string) => (
 const getWriteableProgramScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
+  const data = decodeToken(egoJwt);
   const permissions = data.context.scope;
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
@@ -212,7 +212,7 @@ export default (egoPublicKey: string) => ({
   serializeScope: serializeScope,
   parseScope: parseScope,
   isPermission: isPermission,
-  decodeToken: decodeToken(egoPublicKey),
+  decodeToken: decodeToken,
   isValidJwt: isValidJwt(egoPublicKey),
   isDccMember: isDccMember(egoPublicKey),
   isRdpcMember: isRdpcMember(egoPublicKey),
