@@ -14,6 +14,7 @@ This repo contains a library of utility functions written in **Typescript** inte
   npm i --save @icgc-argo/ego-token-utils
   ```
 - use:
+
   ```typescript
     import TokenUtils from '@icgc-argo/ego-token-utils'
 
@@ -21,6 +22,7 @@ This repo contains a library of utility functions written in **Typescript** inte
     TokenUtils.canReadProgram(egoJwt, "TEST-AU")
     ...
   ```
+
   Interactive documentation is available at: https://icgc-argo.github.io/ego-token-utils/
 
 ## Development
