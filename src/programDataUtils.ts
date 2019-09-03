@@ -10,7 +10,7 @@ import {
 export const getReadableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
+  const data = decodeToken(egoJwt);
   const permissions = data.context.scope;
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
@@ -33,7 +33,7 @@ export const getReadableProgramDataNames = (egoPublicKey: string) => (egoJwt: st
 export const getWritableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string,
 ): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
+  const data = decodeToken(egoJwt);
   const permissions = data.context.scope;
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
