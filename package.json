@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "author": "Minh <hlminh2000@gmail.com>",
+  "author": "ICGC ARGO",
   "repository": {
     "type": "git",
     "url": "https://github.com/icgc-argo/ego-token-utils"
