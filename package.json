@@ -1,6 +1,6 @@
 {
   "name": "@icgc-argo/ego-token-utils",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "",
   "keywords": [],
   "main": "dist/ego-token-utils.umd.js",
@@ -9,7 +9,7 @@
   "files": [
     "dist"
   ],
-  "author": "Minh <hlminh2000@gmail.com>",
+  "author": "ICGC ARGO",
   "repository": {
     "type": "git",
     "url": "https://github.com/icgc-argo/ego-token-utils"
