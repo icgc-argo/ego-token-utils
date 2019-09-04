@@ -1,6 +1,4 @@
-import * as _jwtDecode from 'jwt-decode';
-
-const jwtDecode = _jwtDecode;
+import * as jwt from 'jsonwebtoken';
 
 export const PERMISSIONS: {
   READ: string;
@@ -13,10 +11,19 @@ export const PERMISSIONS: {
   ADMIN: 'ADMIN',
   DENY: 'DENY',
 };
-export const DCC_PREFIX = 'PROGRAMSERVICE.WRITE';
-export const RDPC_PREFIX = 'RDPC-';
 export const PROGRAM_PREFIX = 'PROGRAM-';
 export const PROGRAM_DATA_PREFIX = 'PROGRAMDATA-';
+
+export enum UserStatus {
+  APPROVED = 'APPROVED',
+  DISABLED = 'DISABLED',
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
+}
+export enum UserType {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
 
 export type EgoJwtData = {
   iat: number;
@@ -30,13 +37,13 @@ export type EgoJwtData = {
     user: {
       name: string;
       email: string;
-      status: 'APPROVED' | 'DISABLED' | 'PENDING' | 'REJECTED';
+      status: UserStatus;
       firstName: string;
       lastName: string;
       createdAt: number;
       lastLogin: number;
       preferredLanguage: string | undefined;
-      type: 'ADMIN' | 'USER';
+      type: UserType;
     };
   };
 };
@@ -54,23 +61,16 @@ export const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
   Object.values(PERMISSIONS).includes(str);
 
 /**
- * wrapper for jwt-decode that provides static Ego typing
+ * Decode provided JWT to provide typed EgoJwtData object
+ * Missing values will be null in the provided object,
  * @param egoJwt
  */
-export const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtData =>
-  jwtDecode(egoJwt);
-
-/**
- * check if a given jwt has dcc access
- * @param egoJwt
- */
-export const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
-  try {
-    const data = decodeToken(egoPublicKey)(egoJwt);
-    const permissions = data.context.scope;
-    return permissions.some(p => p.includes(DCC_PREFIX));
-  } catch (err) {
-    return false;
+export const decodeToken = (egoPublicKey: string) => (egoJwt: string): EgoJwtData => {
+  const decoded = jwt.verify(egoJwt, egoPublicKey, { algorithms: ['RS256'] });
+  if (typeof decoded == 'string' || decoded === null) {
+    throw Error('Unexpected JWT Format');
+  } else {
+    return <EgoJwtData>decoded;
   }
 };
 

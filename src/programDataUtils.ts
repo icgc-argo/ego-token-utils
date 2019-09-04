@@ -2,10 +2,11 @@ import {
   PermissionScopeObj,
   decodeToken,
   PROGRAM_DATA_PREFIX,
-  isDccMember,
   PERMISSIONS,
   parseScope,
 } from './common';
+
+import { isDccMember } from './argoRoleChecks';
 
 export const getReadableProgramDataScopes = (egoPublicKey: string) => (
   egoJwt: string,
