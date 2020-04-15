@@ -17,6 +17,10 @@ export const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
   }
 };
 
+export const isDccMemberFromScopes = (permissions: string[]) => {
+  return permissions.some(p => p.includes(DCC_PREFIX));
+};
+
 /**
  * check if a given jwt has rdpc access
  * @param egoJwt
