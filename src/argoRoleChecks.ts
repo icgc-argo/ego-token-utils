@@ -1,4 +1,4 @@
-import { decodeToken, PERMISSIONS } from './common';
+import { PERMISSIONS } from './common';
 
 export const DCC_PREFIX = 'PROGRAMSERVICE.WRITE';
 export const RDPC_PREFIX = 'RDPC-';
@@ -7,17 +7,7 @@ export const RDPC_PREFIX = 'RDPC-';
  * check if a given jwt has dcc access
  * @param egoJwt
  */
-export const isDccMember = (egoPublicKey: string) => (egoJwt: string) => {
-  try {
-    const data = decodeToken(egoPublicKey)(egoJwt);
-    const permissions = data.context.scope;
-    return permissions.some(p => p.includes(DCC_PREFIX));
-  } catch (err) {
-    return false;
-  }
-};
-
-export const isDccMemberFromScopes = (permissions: string[]) => {
+export const isDccMember = (permissions: string[]): boolean => {
   return permissions.some(p => p.includes(DCC_PREFIX));
 };
 
@@ -25,11 +15,9 @@ export const isDccMemberFromScopes = (permissions: string[]) => {
  * check if a given jwt has rdpc access
  * @param egoJwt
  */
-export const isRdpcMember = (egoPublicKey: string) => (egoJwt: string): boolean => {
+export const isRdpcMember = (permissions: string[]): boolean => {
   try {
-    const data = decodeToken(egoPublicKey)(egoJwt);
-    const scopes = data.context.scope;
-    const rdpcPermissions = scopes.filter(p => {
+    const rdpcPermissions = permissions.filter(p => {
       const policy = p.split('.')[0];
       return policy.indexOf(RDPC_PREFIX) === 0;
     });
