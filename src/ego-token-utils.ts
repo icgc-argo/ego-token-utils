@@ -42,7 +42,7 @@ const isValidJwt = (egoPublicKey: string) => (egoJwt?: string) => {
  * takes an PermissionScopeObj and returns a scope string in the format `<policy>.<permission>`
  * @param scopeObj
  */
-export const serializeScope = (scopeObj: PermissionScopeObj): string => {
+const serializeScope = (scopeObj: PermissionScopeObj): string => {
   if (isPermission(scopeObj.permission)) {
     return `${scopeObj.policy}.${scopeObj.permission}`;
   } else {
