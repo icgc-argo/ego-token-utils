@@ -1,18 +1,8 @@
-import {
-  PermissionScopeObj,
-  decodeToken,
-  PROGRAM_DATA_PREFIX,
-  PERMISSIONS,
-  parseScope,
-} from './common';
+import { PermissionScopeObj, PROGRAM_DATA_PREFIX, PERMISSIONS, parseScope } from './common';
 
 import { isDccMember } from './argoRoleChecks';
 
-export const getReadableProgramDataScopes = (egoPublicKey: string) => (
-  egoJwt: string,
-): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
-  const permissions = data.context.scope;
+export const getReadableProgramDataScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
     const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0;
@@ -26,16 +16,10 @@ export const getReadableProgramDataScopes = (egoPublicKey: string) => (
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
-export const getReadableProgramDataNames = (egoPublicKey: string) => (egoJwt: string): string[] =>
-  getReadableProgramDataScopes(egoPublicKey)(egoJwt).map(s =>
-    s.policy.replace(PROGRAM_DATA_PREFIX, ''),
-  );
+export const getReadableProgramDataNames = (permissions: string[]): string[] =>
+  getReadableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, ''));
 
-export const getWritableProgramDataScopes = (egoPublicKey: string) => (
-  egoJwt: string,
-): PermissionScopeObj[] => {
-  const data = decodeToken(egoPublicKey)(egoJwt);
-  const permissions = data.context.scope;
+export const getWritableProgramDataScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
     const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0;
@@ -50,37 +34,26 @@ export const getWritableProgramDataScopes = (egoPublicKey: string) => (
     );
 };
 
-export const getWritableProgramDataNames = (egoPublicKey: string) => (egoJwt: string): string[] =>
-  getWritableProgramDataScopes(egoPublicKey)(egoJwt).map(s =>
-    s.policy.replace(PROGRAM_DATA_PREFIX, ''),
-  );
+export const getWritableProgramDataNames = (permissions: string[]): string[] =>
+  getWritableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, ''));
 
-export const canReadSomeProgramData = (egoPublicKey: string) => (egoJwt: string): boolean => {
-  return isDccMember(egoPublicKey)(egoJwt) || !!getReadableProgramDataScopes(egoJwt).length;
+export const canReadSomeProgramData = (permissions: string[]): boolean => {
+  return isDccMember(permissions) || !!getReadableProgramDataScopes(permissions).length;
 };
 
-export const canWriteSomeProgramData = (egoPublicKey: string) => (egoJwt: string): boolean => {
-  return isDccMember(egoPublicKey)(egoJwt) || !!getWritableProgramDataScopes(egoJwt).length;
+export const canWriteSomeProgramData = (permissions: string[]): boolean => {
+  return isDccMember(permissions) || !!getWritableProgramDataScopes(permissions).length;
 };
 
-export const canReadProgramData = (egoPublicKey: string) => (args: {
-  egoJwt: string;
+export const canReadProgramData = (args: { permissions: string[]; programId: string }): boolean => {
+  const { permissions, programId } = args;
+  return isDccMember(permissions) || getReadableProgramDataNames(permissions).includes(programId);
+};
+
+export const canWriteProgramData = (args: {
+  permissions: string[];
   programId: string;
 }): boolean => {
-  const { egoJwt, programId } = args;
-  return (
-    isDccMember(egoPublicKey)(egoJwt) ||
-    getReadableProgramDataNames(egoPublicKey)(egoJwt).includes(programId)
-  );
-};
-
-export const canWriteProgramData = (egoPublicKey: string) => (args: {
-  egoJwt: string;
-  programId: string;
-}): boolean => {
-  const { egoJwt, programId } = args;
-  return (
-    isDccMember(egoPublicKey)(egoJwt) ||
-    getWritableProgramDataNames(egoPublicKey)(egoJwt).includes(programId)
-  );
+  const { permissions, programId } = args;
+  return isDccMember(permissions) || getWritableProgramDataNames(permissions).includes(programId);
 };
