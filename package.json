@@ -1,6 +1,6 @@
 {
   "name": "@icgc-argo/ego-token-utils",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "",
   "keywords": [],
   "main": "dist/ego-token-utils.umd.js",
@@ -32,7 +32,8 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "publish": "npm publish --access public"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
