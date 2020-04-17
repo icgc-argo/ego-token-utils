@@ -184,7 +184,7 @@ export default (egoPublicKey: string) => ({
   isValidJwt: isValidJwt(egoPublicKey),
   isDccMember: isDccMember,
   isRdpcMember: isRdpcMember,
-  getScopesFromToken: getPermissionsFromToken(egoPublicKey),
+  getPermissionsFromToken: getPermissionsFromToken(egoPublicKey),
   getReadableProgramScopes: getReadableProgramScopes,
   getWriteableProgramScopes: getWriteableProgramScopes,
   canReadProgram: canReadProgram,

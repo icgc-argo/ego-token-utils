@@ -32,18 +32,18 @@ const validator = createValidator(PUBLIC_KEY);
 const badKeyValidator = createValidator(PUBLIC_KEY_WRONG);
 const noKeyValidator = createValidator('');
 
-const dccUserPermissions = validator.getScopesFromToken(DCC_USER);
-const programAdminPermissions = validator.getScopesFromToken(PROGRAM_ADMIN);
-const dataSubmitterPermissions = validator.getScopesFromToken(DATA_SUBMITTER);
+const dccUserPermissions = validator.getPermissionsFromToken(DCC_USER);
+const programAdminPermissions = validator.getPermissionsFromToken(PROGRAM_ADMIN);
+const dataSubmitterPermissions = validator.getPermissionsFromToken(DATA_SUBMITTER);
 
 describe('isRdpcMember', () => {
   it('should invalidate all non RDPC tokens', () => {
     [DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
-      expect(validator.isRdpcMember(validator.getScopesFromToken(token))).toBe(false);
+      expect(validator.isRdpcMember(validator.getPermissionsFromToken(token))).toBe(false);
     });
   });
   it('should return false if failed', () => {
-    expect(validator.isRdpcMember(validator.getScopesFromToken('ssdfg'))).toBe(false);
+    expect(validator.isRdpcMember(validator.getPermissionsFromToken('ssdfg'))).toBe(false);
   });
 });
 
@@ -203,7 +203,7 @@ describe('isDccMember', () => {
     expect(validator.isDccMember(dataSubmitterPermissions)).toBe(false);
   });
   it('should return false if fail', () => {
-    expect(validator.isDccMember(validator.getScopesFromToken('asdfsdf'))).toBe(false);
+    expect(validator.isDccMember(validator.getPermissionsFromToken('asdfsdf'))).toBe(false);
   });
 });
 
