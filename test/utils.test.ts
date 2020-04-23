@@ -1,4 +1,4 @@
-import createValidator from '../src/ego-token-utils';
+import createValidator from '../src';
 
 /** has the following scopes:
  * "PROGRAMDATA-PACA-AU.WRITE"
