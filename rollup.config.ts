@@ -7,7 +7,7 @@ import json from 'rollup-plugin-json';
 
 const pkg = require('./package.json');
 
-const libraryName = 'ego-token-utils';
+const libraryName = 'index';
 
 export default {
   input: `src/${libraryName}.ts`,
@@ -24,7 +24,7 @@ export default {
     // Allow json resolution
     json(),
     // Compile TypeScript files
-    typescript({ useTsconfigDeclarationDir: true }),
+    typescript(),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
     commonjs({
       include: 'node_modules/**',
@@ -35,6 +35,6 @@ export default {
     resolve(),
 
     // Resolve source maps to the original source
-    sourceMaps(),
+    // sourceMaps(),
   ],
 };
