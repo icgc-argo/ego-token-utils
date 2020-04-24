@@ -3,9 +3,9 @@
   "version": "6.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/ego-token-utils.umd.js",
-  "module": "dist/ego-token-utils.es5.js",
-  "typings": "dist/types/ego-token-utils.d.ts",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es5.js",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
