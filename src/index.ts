@@ -196,6 +196,50 @@ const canWriteSomeProgram = (permissions: string[]) => {
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
   canWriteProgram(args);
 
+enum UserProgramMembershipAccessLevel {
+  DCC_MEMBER = 'DCC_MEMBER',
+  FULL_PROGRAM_MEMBER = 'FULL_PROGRAM_MEMBER',
+  ASSOCIATE_PROGRAM_MEMBER = 'ASSOCIATE_PROGRAM_MEMBER',
+  PUBLIC_MEMBER = 'PUBLIC_MEMBER',
+}
+
+/**
+ * return the user's program membership access level
+ * @param args
+ */
+const getProgramMembershipAccessLevel = (args: {
+  permissions: string[];
+}): UserProgramMembershipAccessLevel => {
+  const permissionObjs = args.permissions.map(parseScope);
+
+  const FULL_PROGRAM_MEMBER_POLICY = 'PROGRAMMEMBERSHIP-FULL';
+  const containsFullProgramMemberPolicy = permissionObjs.some(
+    scope => scope.policy === FULL_PROGRAM_MEMBER_POLICY,
+  );
+  const deniedFullProgramMemberPolicy = permissionObjs
+    .filter(scope => scope.policy === FULL_PROGRAM_MEMBER_POLICY)
+    .some(scope => scope.permission === 'DENY');
+
+  const ASSOCIATE_PROGRAM_MEMBER_POLICY = 'PROGRAMMEMBERSHIP-ASSOCIATE';
+  const containsAssociateProgramMemberPolicy = permissionObjs.some(
+    scope => scope.policy === ASSOCIATE_PROGRAM_MEMBER_POLICY,
+  );
+  const deniedAssociateProgramMemberPolicy = permissionObjs
+    .filter(scope => scope.policy === ASSOCIATE_PROGRAM_MEMBER_POLICY)
+    .some(scope => scope.permission === 'DENY');
+
+  switch (true) {
+    case isDccMember(args.permissions):
+      return UserProgramMembershipAccessLevel.DCC_MEMBER;
+    case containsFullProgramMemberPolicy && !deniedFullProgramMemberPolicy:
+      return UserProgramMembershipAccessLevel.FULL_PROGRAM_MEMBER;
+    case containsAssociateProgramMemberPolicy && !deniedAssociateProgramMemberPolicy:
+      return UserProgramMembershipAccessLevel.ASSOCIATE_PROGRAM_MEMBER;
+    default:
+      return UserProgramMembershipAccessLevel.PUBLIC_MEMBER;
+  }
+};
+
 export default (egoPublicKey: string) => ({
   serializeScope: serializeScope,
   parseScope: parseScope,
@@ -222,4 +266,5 @@ export default (egoPublicKey: string) => ({
   getWritableProgramDataScopes: getWritableProgramDataScopes,
   getReadableProgramDataNames: getReadableProgramDataNames,
   getWritableProgramDataNames: getWritableProgramDataNames,
+  getProgramMembershipAccessLevel: getProgramMembershipAccessLevel,
 });
