@@ -231,10 +231,13 @@ const getProgramMembershipAccessLevel = (args: {
   switch (true) {
     case isDccMember(args.permissions):
       return UserProgramMembershipAccessLevel.DCC_MEMBER;
+
     case containsFullProgramMemberPolicy && !deniedFullProgramMemberPolicy:
       return UserProgramMembershipAccessLevel.FULL_PROGRAM_MEMBER;
+
     case containsAssociateProgramMemberPolicy && !deniedAssociateProgramMemberPolicy:
       return UserProgramMembershipAccessLevel.ASSOCIATE_PROGRAM_MEMBER;
+
     default:
       return UserProgramMembershipAccessLevel.PUBLIC_MEMBER;
   }
