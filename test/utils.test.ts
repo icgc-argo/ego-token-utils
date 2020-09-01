@@ -56,6 +56,13 @@ const dccUserPermissions = validator.getPermissionsFromToken(DCC_USER);
 const programAdminPermissions = validator.getPermissionsFromToken(PROGRAM_ADMIN);
 const dataSubmitterPermissions = validator.getPermissionsFromToken(DATA_SUBMITTER);
 
+describe('serializeScope', () => {
+  it('should throw error for invalid scope objects', () => {
+    const parseInvalidObj = () => validator.serializeScope({ permission: '' as any, policy: '' });
+    expect(parseInvalidObj).toThrow();
+  });
+});
+
 describe('isRdpcMember', () => {
   it('should invalidate all non RDPC tokens', () => {
     [DATA_SUBMITTER, PROGRAM_ADMIN, DCC_USER].forEach(token => {
@@ -409,5 +416,62 @@ describe('canWriteProgramData', () => {
         permissions: dccUserPermissions,
       }),
     ).toBe(true);
+  });
+});
+
+describe('getProgramMembershipAccessLevel', () => {
+  it('should identify DCC members correctly', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: dccUserPermissions,
+      }),
+    ).toBe('DCC_MEMBER');
+  });
+  it('should identify empty permissions correctly', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: [],
+      }),
+    ).toBe('PUBLIC_MEMBER');
+  });
+  it('should give the highest of dcc, full program and associate program', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: [
+          'PROGRAMMEMBERSHIP-FULL.READ',
+          'PROGRAMMEMBERSHIP-ASSOCIATE.READ',
+          ...dccUserPermissions,
+        ],
+      }),
+    ).toBe('DCC_MEMBER');
+  });
+  it('should give the highest of full program and associate program', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: ['PROGRAMMEMBERSHIP-FULL.READ', 'PROGRAMMEMBERSHIP-ASSOCIATE.READ'],
+      }),
+    ).toBe('FULL_PROGRAM_MEMBER');
+  });
+  it('should identify associate program members correctly', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: ['PROGRAMMEMBERSHIP-ASSOCIATE.READ'],
+      }),
+    ).toBe('ASSOCIATE_PROGRAM_MEMBER');
+  });
+
+  it('should not allow denied full program members', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: ['PROGRAMMEMBERSHIP-FULL.READ', 'PROGRAMMEMBERSHIP-FULL.DENY'],
+      }),
+    ).not.toBe('FULL_PROGRAM_MEMBER');
+  });
+  it('should not allow denied associate program members', () => {
+    expect(
+      validator.getProgramMembershipAccessLevel({
+        permissions: ['PROGRAMMEMBERSHIP-ASSOCIATE.READ', 'PROGRAMMEMBERSHIP-ASSOCIATE.DENY'],
+      }),
+    ).not.toBe('ASSOCIATE_PROGRAM_MEMBER');
   });
 });
