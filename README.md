@@ -1,7 +1,7 @@
 # Ego Token Utils
 
 [![Coverage Status](https://coveralls.io/repos/github/icgc-argo/ego-token-utils/badge.svg?branch=master)](https://coveralls.io/github/icgc-argo/ego-token-utils?branch=master)
-[![Build Status](https://travis-ci.org/icgc-argo/ego-token-utils.svg?branch=master)](https://travis-ci.org/icgc-argo/ego-token-utils)
+[![Build Status](https://jenkins.qa.cancercollaboratory.org/buildStatus/icon?job=ARGO%2Fego-token-utils%2Fdevelop)](https://jenkins.qa.cancercollaboratory.org/job/ARGO/job/ego-token-utils/job/develop/)
 [![npm version](https://badge.fury.io/js/%40icgc-argo%2Fego-token-utils.svg)](https://badge.fury.io/js/%40icgc-argo%2Fego-token-utils)
 [![Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://prettier.io/)
 
