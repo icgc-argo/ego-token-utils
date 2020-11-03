@@ -196,7 +196,7 @@ const canWriteSomeProgram = (permissions: string[]) => {
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
   canWriteProgram(args);
 
-enum UserProgramMembershipAccessLevel {
+export enum UserProgramMembershipAccessLevel {
   DCC_MEMBER = 'DCC_MEMBER',
   FULL_PROGRAM_MEMBER = 'FULL_PROGRAM_MEMBER',
   ASSOCIATE_PROGRAM_MEMBER = 'ASSOCIATE_PROGRAM_MEMBER',
@@ -271,3 +271,5 @@ export default (egoPublicKey: string) => ({
   getWritableProgramDataNames: getWritableProgramDataNames,
   getProgramMembershipAccessLevel: getProgramMembershipAccessLevel,
 });
+
+export { PERMISSIONS, PermissionScopeObj, PROGRAM_DATA_PREFIX, PROGRAM_PREFIX } from './common';
