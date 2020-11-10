@@ -20,11 +20,9 @@
 
 import * as jwt from 'jsonwebtoken';
 
+export type Permission = 'READ' | 'WRITE' | 'ADMIN' | 'DENY';
 export const PERMISSIONS: {
-  READ: string;
-  WRITE: string;
-  ADMIN: string;
-  DENY: string;
+  [k in Permission]: Permission;
 } = {
   READ: 'READ',
   WRITE: 'WRITE',
@@ -70,14 +68,14 @@ export type EgoJwtData = {
 
 export type PermissionScopeObj = {
   policy: string;
-  permission: keyof typeof PERMISSIONS;
+  permission: Permission;
 };
 
 /**
  * checks if a string is a proper permission
  * @param str
  */
-export const isPermission = (str: any): str is keyof typeof PERMISSIONS =>
+export const isPermission = (str: any): str is Permission =>
   Object.values(PERMISSIONS).includes(str);
 
 /**
