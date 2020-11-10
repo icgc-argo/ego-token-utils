@@ -26,6 +26,7 @@ import {
   PROGRAM_PREFIX,
   PROGRAM_DATA_PREFIX,
   parseScope,
+  Permission,
 } from './common';
 import {
   canReadProgramData,
