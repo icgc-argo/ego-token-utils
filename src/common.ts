@@ -21,10 +21,10 @@
 import * as jwt from 'jsonwebtoken';
 
 export const PERMISSIONS: {
-  READ: string;
-  WRITE: string;
-  ADMIN: string;
-  DENY: string;
+  READ: 'READ';
+  WRITE: 'WRITE';
+  ADMIN: 'ADMIN';
+  DENY: 'DENY';
 } = {
   READ: 'READ',
   WRITE: 'WRITE',
