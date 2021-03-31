@@ -19,6 +19,7 @@
  */
 
 import createValidator from '../src';
+import { DCC_ADMIN_PERMISSION } from '../src/argoRoleChecks';
 
 /** has the following scopes:
  * "PROGRAMDATA-PACA-AU.WRITE"
@@ -231,6 +232,14 @@ describe('isDccMember', () => {
   });
   it('should return false if fail', () => {
     expect(validator.isDccMember(validator.getPermissionsFromToken('asdfsdf'))).toBe(false);
+  });
+  it('should return false given partial permission match', () => {
+    const partialPermissions = [
+      `extra${DCC_ADMIN_PERMISSION}`,
+      `${DCC_ADMIN_PERMISSION}extra`,
+      `extra${DCC_ADMIN_PERMISSION}stuff`,
+    ];
+    expect(validator.isDccMember(partialPermissions)).toBe(false);
   });
 });
 
@@ -473,5 +482,57 @@ describe('getProgramMembershipAccessLevel', () => {
         permissions: ['PROGRAMMEMBERSHIP-ASSOCIATE.READ', 'PROGRAMMEMBERSHIP-ASSOCIATE.DENY'],
       }),
     ).not.toBe('ASSOCIATE_PROGRAM_MEMBER');
+  });
+});
+describe('canWriteKafkaTopic', () => {
+  it('should return true for a the valid scope', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-test_topic.WRITE'],
+        topic: 'test_topic',
+      }),
+    ).toBe(true);
+  });
+  it('should return false for a matching topic with lesser (READ) scope', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-test_topic.READ'],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an incorrect topic', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-wrong_topic.WRITE'],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an partial and matches', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: [
+          'extraDCCKAFKA-test_topic.WRITE',
+          'DCCKAFKA-extratest_topic.WRITE',
+          'DCCKAFKA-test_topicextra.WRITE',
+          'DCCKAFKA-test_topic.extraWRITE',
+          'DCCKAFKA-test_topic.WRITEextra',
+          'DCCKAFKA-test_topic.WRITE.WRITE',
+          'DCCKAFKA-test_topic.WRITEextra',
+          'DCCKAFKA-test_topic-test_topic.WRITE',
+          'DCCKAFKA-test_to.WRITE',
+        ],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an empty permissions array', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: [],
+        topic: 'test_topic',
+      }),
+    );
   });
 });

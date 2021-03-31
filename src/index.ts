@@ -25,6 +25,7 @@ import {
   isPermission,
   PROGRAM_PREFIX,
   PROGRAM_DATA_PREFIX,
+  KAFKA_TOPIC_PREFIX,
   parseScope,
 } from './common';
 import {
@@ -91,8 +92,7 @@ const getPermissionsFromToken = (egoPublicKey: string) => (egoJwt: string): stri
 const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output =
-      policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
+    const output = policy.startsWith(PROGRAM_PREFIX) && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
     return output;
   });
 
@@ -112,8 +112,7 @@ const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] =
 const getWriteableProgramScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output =
-      policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
+    const output = policy.startsWith(PROGRAM_PREFIX) && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
     return output;
   });
 
@@ -243,6 +242,15 @@ const getProgramMembershipAccessLevel = (args: {
   }
 };
 
+/**
+ * Validate that there exists the correct permission
+ * to allow writing to the Platform Kafka on the given topic.
+ * @param args
+ * @returns
+ */
+const canWriteKafkaTopic = (args: { permissions: string[]; topic: string }) =>
+  args.permissions.includes(`${KAFKA_TOPIC_PREFIX}${args.topic}.${PERMISSIONS.WRITE}`);
+
 export default (egoPublicKey: string) => ({
   serializeScope: serializeScope,
   parseScope: parseScope,
@@ -270,6 +278,15 @@ export default (egoPublicKey: string) => ({
   getReadableProgramDataNames: getReadableProgramDataNames,
   getWritableProgramDataNames: getWritableProgramDataNames,
   getProgramMembershipAccessLevel: getProgramMembershipAccessLevel,
+  canWriteKafkaTopic: canWriteKafkaTopic,
 });
 
-export { PERMISSIONS, PermissionScopeObj, PROGRAM_DATA_PREFIX, PROGRAM_PREFIX } from './common';
+export {
+  PERMISSIONS,
+  PermissionScopeObj,
+  PROGRAM_DATA_PREFIX,
+  PROGRAM_PREFIX,
+  KAFKA_TOPIC_PREFIX,
+} from './common';
+
+export { RDPC_PREFIX, DCC_ADMIN_PERMISSION } from './argoRoleChecks';

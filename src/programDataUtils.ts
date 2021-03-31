@@ -25,7 +25,7 @@ import { isDccMember } from './argoRoleChecks';
 export const getReadableProgramDataScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0;
+    const output = policy.startsWith(PROGRAM_DATA_PREFIX);
     return output;
   });
   return programDataPermissions
@@ -42,7 +42,7 @@ export const getReadableProgramDataNames = (permissions: string[]): string[] =>
 export const getWritableProgramDataScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programDataPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output = policy.indexOf(PROGRAM_DATA_PREFIX) === 0;
+    const output = policy.startsWith(PROGRAM_DATA_PREFIX);
     return output;
   });
   return programDataPermissions
