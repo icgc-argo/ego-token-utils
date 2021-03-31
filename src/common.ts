@@ -31,6 +31,7 @@ export const PERMISSIONS: {
 };
 export const PROGRAM_PREFIX = 'PROGRAM-';
 export const PROGRAM_DATA_PREFIX = 'PROGRAMDATA-';
+export const KAFKA_TOPIC_PREFIX = 'DCCKAFKA-';
 
 export enum UserStatus {
   APPROVED = 'APPROVED',

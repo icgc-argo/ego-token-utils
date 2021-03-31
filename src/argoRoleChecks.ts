@@ -20,7 +20,7 @@
 
 import { PERMISSIONS } from './common';
 
-export const DCC_PREFIX = 'PROGRAMSERVICE.WRITE';
+export const DCC_ADMIN_PERMISSION = 'PROGRAMSERVICE.WRITE';
 export const RDPC_PREFIX = 'RDPC-';
 
 /**
@@ -28,7 +28,7 @@ export const RDPC_PREFIX = 'RDPC-';
  * @param egoJwt
  */
 export const isDccMember = (permissions: string[]): boolean => {
-  return permissions.some(p => p.includes(DCC_PREFIX));
+  return permissions.includes(DCC_ADMIN_PERMISSION);
 };
 
 /**
@@ -39,7 +39,7 @@ export const isRdpcMember = (permissions: string[]): boolean => {
   try {
     const rdpcPermissions = permissions.filter(p => {
       const policy = p.split('.')[0];
-      return policy.indexOf(RDPC_PREFIX) === 0;
+      return policy.startsWith(RDPC_PREFIX);
     });
     const isMember =
       rdpcPermissions.some(p =>
