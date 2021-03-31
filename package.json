@@ -1,6 +1,6 @@
 {
   "name": "@icgc-argo/ego-token-utils",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "",
   "keywords": [],
   "main": "dist/index.umd.js",
