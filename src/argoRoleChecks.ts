@@ -28,8 +28,7 @@ export const RDPC_PREFIX = 'RDPC-';
  * @param egoJwt
  */
 export const isDccMember = (permissions: string[]): boolean => {
-  const regex = new RegExp(`^${DCC_ADMIN_PERMISSION}$`);
-  return permissions.some(p => p.match(regex));
+  return permissions.includes(DCC_ADMIN_PERMISSION);
 };
 
 /**
