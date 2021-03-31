@@ -19,6 +19,7 @@
  */
 
 import createValidator from '../src';
+import { DCC_ADMIN_PERMISSION } from '../src/argoRoleChecks';
 
 /** has the following scopes:
  * "PROGRAMDATA-PACA-AU.WRITE"
@@ -231,6 +232,14 @@ describe('isDccMember', () => {
   });
   it('should return false if fail', () => {
     expect(validator.isDccMember(validator.getPermissionsFromToken('asdfsdf'))).toBe(false);
+  });
+  it('should return false given partial permission match', () => {
+    const partialPermissions = [
+      `extra${DCC_ADMIN_PERMISSION}`,
+      `${DCC_ADMIN_PERMISSION}extra`,
+      `extra${DCC_ADMIN_PERMISSION}stuff`,
+    ];
+    expect(validator.isDccMember(partialPermissions)).toBe(false);
   });
 });
 
