@@ -484,3 +484,55 @@ describe('getProgramMembershipAccessLevel', () => {
     ).not.toBe('ASSOCIATE_PROGRAM_MEMBER');
   });
 });
+describe('canWriteKafkaTopic', () => {
+  it('should return true for a the valid scope', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-test_topic.WRITE'],
+        topic: 'test_topic',
+      }),
+    ).toBe(true);
+  });
+  it('should return false for a matching topic with lesser (READ) scope', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-test_topic.READ'],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an incorrect topic', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: ['DCCKAFKA-wrong_topic.WRITE'],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an partial and matches', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: [
+          'extraDCCKAFKA-test_topic.WRITE',
+          'DCCKAFKA-extratest_topic.WRITE',
+          'DCCKAFKA-test_topicextra.WRITE',
+          'DCCKAFKA-test_topic.extraWRITE',
+          'DCCKAFKA-test_topic.WRITEextra',
+          'DCCKAFKA-test_topic.WRITE.WRITE',
+          'DCCKAFKA-test_topic.WRITEextra',
+          'DCCKAFKA-test_topic-test_topic.WRITE',
+          'DCCKAFKA-test_to.WRITE',
+        ],
+        topic: 'test_topic',
+      }),
+    ).toBe(false);
+  });
+  it('should return false for an empty permissions array', () => {
+    expect(
+      validator.canWriteKafkaTopic({
+        permissions: [],
+        topic: 'test_topic',
+      }),
+    );
+  });
+});

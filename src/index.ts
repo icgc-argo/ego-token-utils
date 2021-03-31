@@ -25,6 +25,7 @@ import {
   isPermission,
   PROGRAM_PREFIX,
   PROGRAM_DATA_PREFIX,
+  KAFKA_TOPIC_PREFIX,
   parseScope,
 } from './common';
 import {
@@ -241,6 +242,15 @@ const getProgramMembershipAccessLevel = (args: {
   }
 };
 
+/**
+ *
+ * @param permissions
+ * @param topic
+ * @returns
+ */
+const canWriteKafkaTopic = (args: { permissions: string[]; topic: string }) =>
+  args.permissions.includes(`${KAFKA_TOPIC_PREFIX}${args.topic}.${PERMISSIONS.WRITE}`);
+
 export default (egoPublicKey: string) => ({
   serializeScope: serializeScope,
   parseScope: parseScope,
@@ -268,6 +278,7 @@ export default (egoPublicKey: string) => ({
   getReadableProgramDataNames: getReadableProgramDataNames,
   getWritableProgramDataNames: getWritableProgramDataNames,
   getProgramMembershipAccessLevel: getProgramMembershipAccessLevel,
+  canWriteKafkaTopic: canWriteKafkaTopic,
 });
 
 export { PERMISSIONS, PermissionScopeObj, PROGRAM_DATA_PREFIX, PROGRAM_PREFIX } from './common';
