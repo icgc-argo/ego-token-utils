@@ -243,9 +243,9 @@ const getProgramMembershipAccessLevel = (args: {
 };
 
 /**
- *
- * @param permissions
- * @param topic
+ * Validate that there exists the correct permission
+ * to allow writing to the Platform Kafka on the given topic.
+ * @param args
  * @returns
  */
 const canWriteKafkaTopic = (args: { permissions: string[]; topic: string }) =>
@@ -281,4 +281,12 @@ export default (egoPublicKey: string) => ({
   canWriteKafkaTopic: canWriteKafkaTopic,
 });
 
-export { PERMISSIONS, PermissionScopeObj, PROGRAM_DATA_PREFIX, PROGRAM_PREFIX } from './common';
+export {
+  PERMISSIONS,
+  PermissionScopeObj,
+  PROGRAM_DATA_PREFIX,
+  PROGRAM_PREFIX,
+  KAFKA_TOPIC_PREFIX,
+} from './common';
+
+export { RDPC_PREFIX, DCC_ADMIN_PERMISSION } from './argoRoleChecks';
