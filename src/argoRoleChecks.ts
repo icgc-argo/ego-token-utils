@@ -40,7 +40,7 @@ export const isRdpcMember = (permissions: string[]): boolean => {
   try {
     const rdpcPermissions = permissions.filter(p => {
       const policy = p.split('.')[0];
-      return policy.indexOf(RDPC_PREFIX) === 0;
+      return policy.startsWith(RDPC_PREFIX);
     });
     const isMember =
       rdpcPermissions.some(p =>

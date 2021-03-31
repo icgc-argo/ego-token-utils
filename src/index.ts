@@ -91,8 +91,7 @@ const getPermissionsFromToken = (egoPublicKey: string) => (egoJwt: string): stri
 const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output =
-      policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
+    const output = policy.startsWith(PROGRAM_PREFIX) && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
     return output;
   });
 
@@ -112,8 +111,7 @@ const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] =
 const getWriteableProgramScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programPermissions = permissions.filter(p => {
     const policy = p.split('.')[0];
-    const output =
-      policy.indexOf(PROGRAM_PREFIX) === 0 && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
+    const output = policy.startsWith(PROGRAM_PREFIX) && policy.indexOf(PROGRAM_DATA_PREFIX) !== 0;
     return output;
   });
 
