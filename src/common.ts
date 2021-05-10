@@ -43,6 +43,13 @@ export enum UserType {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
+export enum ProviderType {
+  GOOGLE = 'GOOGLE',
+  ORCID = 'ORCID',
+  LINKEDIN = 'LINKEDIN',
+  GITHUB = 'GITHUB',
+  FACEBOOK = 'FACEBOOK',
+}
 
 export type EgoJwtData = {
   iat: number;
@@ -54,7 +61,6 @@ export type EgoJwtData = {
   context: {
     scope: string[];
     user: {
-      name: string;
       email: string;
       status: UserStatus;
       firstName: string;
@@ -63,6 +69,8 @@ export type EgoJwtData = {
       lastLogin: number;
       preferredLanguage: string | undefined;
       type: UserType;
+      providerType: ProviderType;
+      providerSubjectId: string;
     };
   };
 };
