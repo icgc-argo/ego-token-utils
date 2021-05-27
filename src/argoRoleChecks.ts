@@ -22,18 +22,19 @@ import { PERMISSIONS } from './common';
 
 export const DCC_ADMIN_PERMISSION = 'PROGRAMSERVICE.WRITE';
 export const RDPC_PREFIX = 'RDPC-';
+export const DACO_ADMIN_PERMISSION = 'DACO-REVIEW.WRITE';
 
 /**
- * check if a given jwt has dcc access
- * @param egoJwt
+ * check if a given set of permissions has dcc access
+ * @param permissions
  */
 export const isDccMember = (permissions: string[]): boolean => {
   return permissions.includes(DCC_ADMIN_PERMISSION);
 };
 
 /**
- * check if a given jwt has rdpc access
- * @param egoJwt
+ * check if a given set of permissions has rdpc access
+ * @param permissions
  */
 export const isRdpcMember = (permissions: string[]): boolean => {
   try {
@@ -54,4 +55,12 @@ export const isRdpcMember = (permissions: string[]): boolean => {
   } catch (err) {
     return false;
   }
+};
+
+/**
+ * check if a given set of permissions has daco admin access
+ * @param permissions
+ */
+export const isDacoAdmin = (permissions: string[]): boolean => {
+  return permissions.includes(DACO_ADMIN_PERMISSION);
 };
