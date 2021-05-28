@@ -19,7 +19,7 @@
  */
 
 import createValidator from '../src';
-import { DCC_ADMIN_PERMISSION } from '../src/argoRoleChecks';
+import { DACO_ADMIN_PERMISSION, DCC_ADMIN_PERMISSION } from '../src/argoRoleChecks';
 import { ProviderType } from '../src/common';
 
 /** has the following scopes:
@@ -41,6 +41,8 @@ const PROGRAM_ADMIN = `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjI2Nzkz
  **/
 const DCC_USER = `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjI2ODQ0NTgsImV4cCI6MjA2Mjc3MDg1OCwic3ViIjoiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwiY29udGV4dCI6eyJzY29wZSI6WyJzY29yZS1hcmdvLXFhLldSSVRFIiwic29uZy1hcmdvLXFhLldSSVRFIiwiUFJPR1JBTVNFUlZJQ0UuV1JJVEUiLCJDTElOSUNBTFNFUlZJQ0UuV1JJVEUiXSwidXNlciI6eyJlbWFpbCI6Im9pY3J0ZXN0dXNlckBnbWFpbC5jb20iLCJzdGF0dXMiOiJBUFBST1ZFRCIsImZpcnN0TmFtZSI6Ik9JQ1IiLCJsYXN0TmFtZSI6IlRlc3RlciIsImNyZWF0ZWRBdCI6MTU2MjYyMzkwODU2MywibGFzdExvZ2luIjoxNTYyNjg0NDU4NDA5LCJwcmVmZXJyZWRMYW5ndWFnZSI6bnVsbCwidHlwZSI6IlVTRVIiLCJwcm92aWRlclR5cGUiOiJHT09HTEUiLCJwcm92aWRlclN1YmplY3RJZCI6InRlc3RVc2VyMTIzNCJ9fX0.rB2SeUmSzF47erOJbJowuAlDLj0PssUB-V8grSWQtEGial9pMHWEnqHwf4qqb3bCueXA6q9S18eV59a7sir5_u5ke82HYuPL03PrpWCmJxKPKZIPSn1iOp6_FpZ9RWpcTIS1rVgI5zAMMUbnxpMvIkS__z6a62Al7VRArYeOafjph2wdn5Qy2T683iKaElAeLUTQczUt0tstOYUJ-HYCD1W_GDdmg8kqDAA-ZWhI_A7p2meMRLaZqPR_f-Ad5tvQd0VAKUKbJqBw-eclydyeIOwlwd2-7XBpVgWn1GXF43PqO68OCOmic0IQjAEu0N6oXreWcHeSNnzRtBNNkpNPhg`;
 
+const DACO_ADMIN = `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MjE3ODkzMzgsImV4cCI6MjA1Mjc2NTc2Nywic3ViIjoiZjAzYWMxZGQtY2RmYS00NzRiLTlmYTEtNGMzYzFmNDNhYjBlIiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiNTg1YzAxYzYtNDUwOS00ZTk3LTg2NWEtMmMwNzZkY2M4OGEzIiwiY29udGV4dCI6eyJzY29wZSI6WyJEQUNPLVJFVklFVy5XUklURSJdLCJ1c2VyIjp7ImVtYWlsIjoiam9obm55LmFkbWluQGV4YW1wbGUuY29tIiwic3RhdHVzIjoiQVBQUk9WRUQiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkRhY28gQWRtaW4iLCJjcmVhdGVkQXQiOjE2MjE3ODkzMzgwMDAsImxhc3RMb2dpbiI6MTYyMTk3NjUzODAwMCwicHJlZmVycmVkTGFuZ3VhZ2UiOm51bGwsInR5cGUiOiJVU0VSIiwicHJvdmlkZXJUeXBlIjoiR09PR0xFIiwicHJvdmlkZXJTdWJqZWN0SWQiOiJkYWNvQWRtaW4xMjM0In19fQ.RB4evQem129VdH0xYF3VhyFrFsUW2guxngATGicJeFyJPSEDRGmw71HWiPJjIHf68cqF9Gk7Eu5hGAUJyvX1eDPb9NHPYxwWzSpYQzZGTk0xCov7IjPPw71rQyHmBxqGaoZXsL1qNC_3N_ZalZAsTaGPn-2djP2AeSotM669GySxCvfWehWDL2yX2oKfjbDWImnWeaxkJrBVrK1t25y2xqQesvTW1iYsWnmkBTVb4Np0pVyltkLwZNygbPdxxNMUp5OAIA5OlpLLblbfFaF3EE2CjWpLeDQ2zDG_6kdGxkPMHHRNjyktodD_ilIlSIXVt3cgZjPlguIYzO_oL9p3LQ`;
+
 const EXPIRED_TOKEN = `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjI2ODQ0NTgsImV4cCI6MTU2Mjc3MDg1OCwic3ViIjoiN2VlMWRkODctNTUzMC00MzA0LWIzYjItZTZiYzU5M2FmYjM3IiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiYWI0NTI0MjUtYjJiOC00MzExLWFmOTAtZGFkNzhjYjM0YTUzIiwiY29udGV4dCI6eyJzY29wZSI6WyJzY29yZS1hcmdvLXFhLldSSVRFIiwic29uZy1hcmdvLXFhLldSSVRFIiwiUFJPR1JBTVNFUlZJQ0UuV1JJVEUiXSwidXNlciI6eyJlbWFpbCI6Im9pY3J0ZXN0dXNlckBnbWFpbC5jb20iLCJzdGF0dXMiOiJBUFBST1ZFRCIsImZpcnN0TmFtZSI6Ik9JQ1IiLCJsYXN0TmFtZSI6IlRlc3RlciIsImNyZWF0ZWRBdCI6MTU2MjYyMzkwODU2MywibGFzdExvZ2luIjoxNTYyNjg0NDU4NDA5LCJwcmVmZXJyZWRMYW5ndWFnZSI6bnVsbCwidHlwZSI6IlVTRVIiLCJwcm92aWRlclR5cGUiOiJHT09HTEUiLCJwcm92aWRlclN1YmplY3RJZCI6InRlc3RVc2VyMTIzNCJ9fX0.r28t_i7KBzyQRRiJzVw-dvlk1tbZqXLPwop-qB_TIjaiHiL3uduIewG_4uHBY_ASWHYKmMOuAPODPpe0ClxjO0tTsIwWniDTKmC0dtIGY4QbcoVBZeCfcz-_7NfuG3zwbaMgaGGXwEzYdp3FYas17qplTJV7vySB2Pn5PCFdbYze9t9YsFfcKCeyeNKgTK-TmXkXyGSPSeWEnGx7ICs3TRzbkvqSbFvL3N1fYOcO3_5dm4chU8i3Xb4mgQZVJMZufrJf5rhBOvp8InijFFASkPxRWkicPhYt9XVOylwufLNfxA4tQGDlfZ5OFgLXkLylXv-Uns7xmlmwtYzRHcqB5A`;
 
 const BOGUS_PROGRAM_ID = 'BOGUS_PROGRAM';
@@ -55,6 +57,7 @@ const noKeyValidator = createValidator('');
 const dccUserPermissions = validator.getPermissionsFromToken(DCC_USER);
 const programAdminPermissions = validator.getPermissionsFromToken(PROGRAM_ADMIN);
 const dataSubmitterPermissions = validator.getPermissionsFromToken(DATA_SUBMITTER);
+const dacoAdminPermissions = validator.getPermissionsFromToken(DACO_ADMIN);
 
 describe('serializeScope', () => {
   it('should throw error for invalid scope objects', () => {
@@ -241,6 +244,26 @@ describe('isDccMember', () => {
       `extra${DCC_ADMIN_PERMISSION}stuff`,
     ];
     expect(validator.isDccMember(partialPermissions)).toBe(false);
+  });
+});
+
+describe('isDacoAdmin', () => {
+  it('should validate DACO admin as such', () => {
+    expect(validator.isDacoAdmin(dacoAdminPermissions)).toBe(true);
+  });
+  it('should validate non DACO admin as such', () => {
+    expect(validator.isDacoAdmin(dataSubmitterPermissions)).toBe(false);
+  });
+  it('should return false if fail', () => {
+    expect(validator.isDacoAdmin(validator.getPermissionsFromToken('asdfsdf'))).toBe(false);
+  });
+  it('should return false given partial permission match', () => {
+    const partialPermissions = [
+      `extra${DACO_ADMIN_PERMISSION}`,
+      `${DACO_ADMIN_PERMISSION}extra`,
+      `extra${DACO_ADMIN_PERMISSION}stuff`,
+    ];
+    expect(validator.isDacoAdmin(partialPermissions)).toBe(false);
   });
 });
 
