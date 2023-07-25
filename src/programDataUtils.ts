@@ -32,7 +32,7 @@ export const getReadableProgramDataScopes = (permissions: string[]): PermissionS
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
@@ -54,7 +54,7 @@ export const getWritableProgramDataScopes = (permissions: string[]): PermissionS
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
