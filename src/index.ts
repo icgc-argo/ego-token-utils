@@ -195,6 +195,7 @@ const canWriteSomeProgram = (permissions: string[]) => {
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
   args.permissions.some(
     code =>
+      code &&
       code.startsWith(PROGRAM_PREFIX) &&
       code.includes(PERMISSIONS.WRITE) &&
       code.includes(args.programId),
