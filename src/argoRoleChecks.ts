@@ -58,6 +58,15 @@ export const isRdpcMember = (permissions: string[]): boolean => {
 };
 
 /**
+ * check if a given set of permissions has rdpc write access
+ * @param permissions
+ */
+export const isRdpcAdmin = (permissions: string[]): boolean =>
+  permissions
+    .filter(policy => policy && policy.startsWith(RDPC_PREFIX))
+    .some(code => code.includes(PERMISSIONS.WRITE));
+
+/**
  * check if a given set of permissions has daco admin access
  * @param permissions
  */
