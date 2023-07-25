@@ -77,6 +77,12 @@ describe('isRdpcMember', () => {
   });
 });
 
+describe('isRdpcAdmin', () => {
+  it('should return false if failed', () => {
+    expect(validator.isRdpcAdmin(validator.getPermissionsFromToken('ssdfg'))).toBe(false);
+  });
+});
+
 describe('parseScope', () => {
   it('should parse valid scopes correctly', () => {
     expect(validator.parseScope('PROGRAM-WP-CPMP-US.READ')).toEqual({
