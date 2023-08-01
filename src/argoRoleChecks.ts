@@ -44,9 +44,7 @@ export const isRdpcMember = (permissions: string[]): boolean => {
     });
     const isMember =
       rdpcPermissions.some(p =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(p.split(
-          '.',
-        )[1] as keyof typeof PERMISSIONS),
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(p.split('.')[1] as keyof typeof PERMISSIONS),
       ) &&
       !rdpcPermissions.some(p =>
         [PERMISSIONS.DENY].includes(p.split('.')[1] as keyof typeof PERMISSIONS),
