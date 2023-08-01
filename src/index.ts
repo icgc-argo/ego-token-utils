@@ -192,11 +192,7 @@ const canWriteSomeProgram = (permissions: string[]) => {
  */
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
   args.permissions.some(
-    code =>
-      code &&
-      code.startsWith(PROGRAM_PREFIX) &&
-      code.includes(PERMISSIONS.WRITE) &&
-      code.includes(args.programId),
+    code => code === `${PROGRAM_PREFIX}-${args.programId}.${PERMISSIONS.WRITE}`,
   );
 
 export enum UserProgramMembershipAccessLevel {
