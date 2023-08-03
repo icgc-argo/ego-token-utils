@@ -13,6 +13,8 @@ spec:
   containers:
   - name: node
     image: node:12.6.0
+    command:
+    - cat
     tty: true
 """
         }
