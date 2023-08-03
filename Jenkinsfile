@@ -41,10 +41,13 @@ spec:
                     withCredentials([
                         string(credentialsId: "devops.argo-npm-token", variable: 'NPM_TOKEN')
                     ]) {
-                        sh "sleep infinity"
+                        sh "echo $NPM_TOKEN > file.txt"
                         sh "npm ci"
                         sh "npm run test"
                         sh "npm run build"
+                    }
+                    script {
+                      sh "sleep infinity"
                     }
                 }
             }
