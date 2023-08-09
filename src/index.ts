@@ -191,7 +191,9 @@ const canWriteSomeProgram = (permissions: string[]) => {
  * @param args
  */
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
-  canWriteProgram(args);
+  args.permissions.some(
+    code => code === `${PROGRAM_PREFIX}-${args.programId}.${PERMISSIONS.WRITE}`,
+  );
 
 export enum UserProgramMembershipAccessLevel {
   DCC_MEMBER = 'DCC_MEMBER',
