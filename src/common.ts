@@ -20,13 +20,12 @@
 
 import * as jwt from 'jsonwebtoken';
 
-export type Permission = 'READ' | 'WRITE' | 'ADMIN' | 'DENY';
+export type Permission = 'READ' | 'WRITE' | 'DENY';
 export const PERMISSIONS: {
   [k in Permission]: Permission;
 } = {
   READ: 'READ',
   WRITE: 'WRITE',
-  ADMIN: 'ADMIN',
   DENY: 'DENY',
 };
 export const PROGRAM_PREFIX = 'PROGRAM-';

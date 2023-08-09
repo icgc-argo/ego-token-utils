@@ -100,7 +100,7 @@ const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] =
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
@@ -120,7 +120,7 @@ const getWriteableProgramScopes = (permissions: string[]): PermissionScopeObj[] 
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
@@ -165,9 +165,7 @@ const canWriteProgram = (args: { permissions: string[]; programId: string }): bo
     isDccMember(args.permissions) ||
     authorizedProgramScopes.some(({ policy, permission }) => {
       const programId = policy.replace(PROGRAM_PREFIX, '');
-      return (
-        programId === args.programId && [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
-      );
+      return programId === args.programId && [PERMISSIONS.WRITE].includes(permission);
     })
   );
 };
@@ -193,7 +191,9 @@ const canWriteSomeProgram = (permissions: string[]) => {
  * @param args
  */
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
-  canWriteProgram(args);
+  args.permissions.some(
+    code => code === `${PROGRAM_PREFIX}-${args.programId}.${PERMISSIONS.WRITE}`,
+  );
 
 export enum UserProgramMembershipAccessLevel {
   DCC_MEMBER = 'DCC_MEMBER',
