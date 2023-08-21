@@ -23,7 +23,7 @@ kind: Pod
 spec:
   containers:
   - name: node
-    image: node:18.16.1-alpine
+    image: node:18.16.1
     tty: true
     env: 
     - name: HOME
