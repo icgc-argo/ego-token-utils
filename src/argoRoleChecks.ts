@@ -44,9 +44,7 @@ export const isRdpcMember = (permissions: string[]): boolean => {
     });
     const isMember =
       rdpcPermissions.some(p =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(p.split(
-          '.',
-        )[1] as keyof typeof PERMISSIONS),
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(p.split('.')[1] as keyof typeof PERMISSIONS),
       ) &&
       !rdpcPermissions.some(p =>
         [PERMISSIONS.DENY].includes(p.split('.')[1] as keyof typeof PERMISSIONS),
@@ -56,6 +54,22 @@ export const isRdpcMember = (permissions: string[]): boolean => {
     return false;
   }
 };
+
+/**
+ * check if a given set of permissions has rdpc write access
+ * @param permissions
+ */
+export const isRdpcAdmin = (permissions: string[]): boolean =>
+  permissions
+    .filter(policy => policy && policy.startsWith(RDPC_PREFIX))
+    .some(code => code.includes(PERMISSIONS.WRITE));
+
+/**
+ * check if given permissions has write access to specific RDPC
+ * @param args
+ */
+export const canWriteToRdpc = (args: { permissions: string[]; rdpcCode: string }): boolean =>
+  args.permissions.some(code => code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.WRITE}`);
 
 /**
  * check if a given set of permissions has daco admin access

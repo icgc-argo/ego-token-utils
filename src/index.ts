@@ -38,7 +38,7 @@ import {
   getReadableProgramDataNames,
   getWritableProgramDataNames,
 } from './programDataUtils';
-import { isDccMember, isRdpcMember, isDacoAdmin } from './argoRoleChecks';
+import { isDccMember, isRdpcMember, isRdpcAdmin, isDacoAdmin } from './argoRoleChecks';
 
 import * as jwt from 'jsonwebtoken';
 
@@ -100,7 +100,7 @@ const getReadableProgramScopes = (permissions: string[]): PermissionScopeObj[] =
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
@@ -120,7 +120,7 @@ const getWriteableProgramScopes = (permissions: string[]): PermissionScopeObj[] 
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
@@ -165,9 +165,7 @@ const canWriteProgram = (args: { permissions: string[]; programId: string }): bo
     isDccMember(args.permissions) ||
     authorizedProgramScopes.some(({ policy, permission }) => {
       const programId = policy.replace(PROGRAM_PREFIX, '');
-      return (
-        programId === args.programId && [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(permission)
-      );
+      return programId === args.programId && [PERMISSIONS.WRITE].includes(permission);
     })
   );
 };
@@ -193,7 +191,7 @@ const canWriteSomeProgram = (permissions: string[]) => {
  * @param args
  */
 const isProgramAdmin = (args: { permissions: string[]; programId: string }): boolean =>
-  canWriteProgram(args);
+  args.permissions.some(code => code === `${PROGRAM_PREFIX}${args.programId}.${PERMISSIONS.WRITE}`);
 
 export enum UserProgramMembershipAccessLevel {
   DCC_MEMBER = 'DCC_MEMBER',
@@ -252,34 +250,35 @@ const canWriteKafkaTopic = (args: { permissions: string[]; topic: string }) =>
   args.permissions.includes(`${KAFKA_TOPIC_PREFIX}${args.topic}.${PERMISSIONS.WRITE}`);
 
 export default (egoPublicKey: string) => ({
-  serializeScope: serializeScope,
-  parseScope: parseScope,
-  isPermission: isPermission,
+  serializeScope,
+  parseScope,
+  isPermission,
   decodeToken: decodeToken(egoPublicKey),
   isValidJwt: isValidJwt(egoPublicKey),
-  isDccMember: isDccMember,
-  isRdpcMember: isRdpcMember,
+  isDccMember,
+  isRdpcMember,
+  isRdpcAdmin,
   isDacoAdmin,
   getPermissionsFromToken: getPermissionsFromToken(egoPublicKey),
-  getReadableProgramScopes: getReadableProgramScopes,
-  getWriteableProgramScopes: getWriteableProgramScopes,
-  canReadProgram: canReadProgram,
-  canWriteProgram: canWriteProgram,
-  isProgramAdmin: isProgramAdmin,
-  canReadSomeProgram: canReadSomeProgram,
-  canWriteSomeProgram: canWriteSomeProgram,
-  getReadableProgramShortNames: getReadableProgramShortNames,
-  getWriteableProgramShortNames: getWriteableProgramShortNames,
-  canReadProgramData: canReadProgramData,
-  canWriteProgramData: canWriteProgramData,
-  canReadSomeProgramData: canReadSomeProgramData,
-  canWriteSomeProgramData: canWriteSomeProgramData,
-  getReadableProgramDataScopes: getReadableProgramDataScopes,
-  getWritableProgramDataScopes: getWritableProgramDataScopes,
-  getReadableProgramDataNames: getReadableProgramDataNames,
-  getWritableProgramDataNames: getWritableProgramDataNames,
-  getProgramMembershipAccessLevel: getProgramMembershipAccessLevel,
-  canWriteKafkaTopic: canWriteKafkaTopic,
+  getReadableProgramScopes,
+  getWriteableProgramScopes,
+  canReadProgram,
+  canWriteProgram,
+  isProgramAdmin,
+  canReadSomeProgram,
+  canWriteSomeProgram,
+  getReadableProgramShortNames,
+  getWriteableProgramShortNames,
+  canReadProgramData,
+  canWriteProgramData,
+  canReadSomeProgramData,
+  canWriteSomeProgramData,
+  getReadableProgramDataScopes,
+  getWritableProgramDataScopes,
+  getReadableProgramDataNames,
+  getWritableProgramDataNames,
+  getProgramMembershipAccessLevel,
+  canWriteKafkaTopic,
 });
 
 export {

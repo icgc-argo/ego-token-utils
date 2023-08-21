@@ -32,12 +32,17 @@ export const getReadableProgramDataScopes = (permissions: string[]): PermissionS
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.READ, PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.READ, PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
 export const getReadableProgramDataNames = (permissions: string[]): string[] =>
-  getReadableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, ''));
+  Array.from(
+    // Build from a Set to force unique values.
+    new Set<string>(
+      getReadableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, '')),
+    ),
+  );
 
 export const getWritableProgramDataScopes = (permissions: string[]): PermissionScopeObj[] => {
   const programDataPermissions = permissions.filter(p => {
@@ -49,13 +54,18 @@ export const getWritableProgramDataScopes = (permissions: string[]): PermissionS
     .map(parseScope)
     .filter(
       scopeObj =>
-        [PERMISSIONS.WRITE, PERMISSIONS.ADMIN].includes(scopeObj.permission) &&
+        [PERMISSIONS.WRITE].includes(scopeObj.permission) &&
         ![PERMISSIONS.DENY].includes(scopeObj.permission),
     );
 };
 
 export const getWritableProgramDataNames = (permissions: string[]): string[] =>
-  getWritableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, ''));
+  Array.from(
+    // Build from a Set to force unique values.
+    new Set<string>(
+      getWritableProgramDataScopes(permissions).map(s => s.policy.replace(PROGRAM_DATA_PREFIX, '')),
+    ),
+  );
 
 export const canReadSomeProgramData = (permissions: string[]): boolean => {
   return isDccMember(permissions) || !!getReadableProgramDataScopes(permissions).length;
