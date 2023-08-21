@@ -81,7 +81,7 @@ pipeline {
             steps {
                 container('node') {
                     withCredentials([usernamePassword(
-                        credentialsId: 'OvertureBioGithub',
+                        credentialsId: 'argoGithub',
                         passwordVariable: 'GIT_PASSWORD',
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
