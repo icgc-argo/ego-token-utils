@@ -102,7 +102,8 @@ pipeline {
                         credentialsId: "devops.argo-npm-token",
                         variable: 'NPM_TOKEN'
                     )]) {
-                        sh "NPM_TOKEN=${NPM_TOKEN} npm run publish"
+                        sh "npm config set '//registry.npmjs.org/:_authToken' \"${NPM_TOKEN}\""
+                        sh "npm run publish"
                     }
                 }
             }
