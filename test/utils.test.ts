@@ -101,10 +101,6 @@ describe('parseScope', () => {
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'WRITE',
     });
-    expect(validator.parseScope('PROGRAM-WP-CPMP-US.ADMIN')).toEqual({
-      policy: 'PROGRAM-WP-CPMP-US',
-      permission: 'ADMIN',
-    });
     expect(validator.parseScope('PROGRAM-WP-CPMP-US.DENY')).toEqual({
       policy: 'PROGRAM-WP-CPMP-US',
       permission: 'DENY',
@@ -128,7 +124,7 @@ describe('serializeScope', () => {
 
 describe('isPermission', () => {
   it('should validates all permissions', () => {
-    ['READ', 'WRITE', 'ADMIN', 'DENY'].forEach(str => {
+    ['READ', 'WRITE', 'DENY'].forEach(str => {
       expect(validator.isPermission(str)).toBe(true);
     });
   });
