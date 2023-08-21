@@ -44,7 +44,6 @@ pipeline {
         organization = "icgc-argo" 
         appName = "ego-token-utils"
         gitHubRepo = "${organization}/${appName}"
-        containerImageName = "${containerRegistry}/${gitHubRepo}"
         
         commit = sh(returnStdout: true, script: 'git describe --always').trim()
         version = sh(returnStdout: true, script: 'cat package.json | grep version | cut -d \':\' -f2 | sed -e \'s/"//\' -e \'s/",//\'').trim()
