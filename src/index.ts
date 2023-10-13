@@ -38,7 +38,14 @@ import {
   getReadableProgramDataNames,
   getWritableProgramDataNames,
 } from './programDataUtils';
-import { isDccMember, isRdpcMember, isRdpcAdmin, isDacoAdmin } from './argoRoleChecks';
+import {
+  canWriteToRdpc,
+  isDccMember,
+  isRdpcMember,
+  isRdpcAdmin,
+  isDacoAdmin,
+  isDacoApproved,
+} from './argoRoleChecks';
 
 import * as jwt from 'jsonwebtoken';
 
@@ -259,6 +266,7 @@ export default (egoPublicKey: string) => ({
   isRdpcMember,
   isRdpcAdmin,
   isDacoAdmin,
+  isDacoApproved,
   getPermissionsFromToken: getPermissionsFromToken(egoPublicKey),
   getReadableProgramScopes,
   getWriteableProgramScopes,
@@ -267,6 +275,7 @@ export default (egoPublicKey: string) => ({
   isProgramAdmin,
   canReadSomeProgram,
   canWriteSomeProgram,
+  canWriteToRdpc,
   getReadableProgramShortNames,
   getWriteableProgramShortNames,
   canReadProgramData,
