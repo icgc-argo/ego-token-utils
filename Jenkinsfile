@@ -23,7 +23,7 @@ kind: Pod
 spec:
   containers:
   - name: node
-    image: node:18.16.1-alpine
+    image: node:18.16.1
     tty: true
     env: 
     - name: HOME
@@ -81,7 +81,7 @@ pipeline {
             steps {
                 container('node') {
                     withCredentials([usernamePassword(
-                        credentialsId: 'OvertureBioGithub',
+                        credentialsId: 'argoGithub',
                         passwordVariable: 'GIT_PASSWORD',
                         usernameVariable: 'GIT_USERNAME'
                     )]) {
@@ -102,7 +102,8 @@ pipeline {
                         credentialsId: "devops.argo-npm-token",
                         variable: 'NPM_TOKEN'
                     )]) {
-                        sh "NPM_TOKEN=${NPM_TOKEN} npm run publish"
+                        sh "npm config set '//registry.npmjs.org/:_authToken' \"${NPM_TOKEN}\""
+                        sh "npm run publish"
                     }
                 }
             }

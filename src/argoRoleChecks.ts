@@ -24,6 +24,8 @@ export const DCC_ADMIN_PERMISSION = 'PROGRAMSERVICE.WRITE';
 export const RDPC_PREFIX = 'RDPC-';
 export const DACO_ADMIN_PERMISSION = 'DACO-REVIEW.WRITE';
 
+export const DACO_POLICY = 'DACO';
+
 /**
  * check if a given set of permissions has dcc access
  * @param permissions
@@ -77,4 +79,9 @@ export const canWriteToRdpc = (args: { permissions: string[]; rdpcCode: string }
  */
 export const isDacoAdmin = (permissions: string[]): boolean => {
   return permissions.includes(DACO_ADMIN_PERMISSION);
+};
+
+export const isDacoApproved = (permissions: string[]): boolean => {
+  const dacoPermission = `${DACO_POLICY}.READ`;
+  return permissions.includes(dacoPermission);
 };
