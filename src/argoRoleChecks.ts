@@ -79,7 +79,9 @@ export const canWriteToRdpc = (args: { permissions: string[]; rdpcCode: string }
  */
 export const canReadFromRdpc = (args: { permissions: string[]; rdpcCode: string }): boolean => {
   return args.permissions.some(
-    code => code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.READ}`,
+    code =>
+      code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.READ}` ||
+      code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.WRITE}`,
   );
 };
 
