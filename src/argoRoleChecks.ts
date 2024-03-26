@@ -74,9 +74,8 @@ export const canWriteToRdpc = (args: { permissions: string[]; rdpcCode: string }
   args.permissions.some(code => code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.WRITE}`);
 
 /**
- *
+ * check if given permissions has read access to specific RDPC
  * @param args
- * @returns
  */
 export const canReadFromRdpc = (args: { permissions: string[]; rdpcCode: string }): boolean => {
   return args.permissions.some(
