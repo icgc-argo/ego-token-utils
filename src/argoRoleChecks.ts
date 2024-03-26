@@ -74,6 +74,17 @@ export const canWriteToRdpc = (args: { permissions: string[]; rdpcCode: string }
   args.permissions.some(code => code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.WRITE}`);
 
 /**
+ *
+ * @param args
+ * @returns
+ */
+export const canReadFromRdpc = (args: { permissions: string[]; rdpcCode: string }): boolean => {
+  return args.permissions.some(
+    code => code === `${RDPC_PREFIX}${args.rdpcCode}.${PERMISSIONS.READ}`,
+  );
+};
+
+/**
  * check if a given set of permissions has daco admin access
  * @param permissions
  */

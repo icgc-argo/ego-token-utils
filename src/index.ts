@@ -40,6 +40,7 @@ import {
 } from './programDataUtils';
 import {
   canWriteToRdpc,
+  canReadFromRdpc,
   isDccMember,
   isRdpcMember,
   isRdpcAdmin,
@@ -276,6 +277,7 @@ export default (egoPublicKey: string) => ({
   canReadSomeProgram,
   canWriteSomeProgram,
   canWriteToRdpc,
+  canReadFromRdpc,
   getReadableProgramShortNames,
   getWriteableProgramShortNames,
   canReadProgramData,
